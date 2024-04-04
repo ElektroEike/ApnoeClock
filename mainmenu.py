@@ -7,8 +7,6 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 
 from maxtimescreen import MaxTimeScreen
 
-# FixMe: Problem: Screens greifen auf Konstante "MenuScreen" zu
-
 
 class MenuScreen(Screen):
     def __init__(self, **kwargs):
@@ -44,7 +42,7 @@ class WidgetApp(App):
     def build(self):
         manager = ScreenManager()
         manager.add_widget(MenuScreen(name="MenuScreen"))
-        manager.add_widget(MaxTimeScreen(name="MaxTimeScreen"))
+        manager.add_widget(MaxTimeScreen(name="MaxTimeScreen", parent_name="MenuScreen"))
         manager.current="MenuScreen"
         return manager
 
