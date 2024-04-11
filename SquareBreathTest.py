@@ -7,15 +7,58 @@ from kivy.graphics import Ellipse, Color, Line
 
 
 class StateClock:
-    def __init__(self, state_dict):
+    NEW_STATE = 1
+    RUN_STATE = 2
+    FINISHED = 3
+
+    def __init__(self, state_dict, report_method):
         self._states = state_dict
-        self.clock = None
-        self.clock_is_running = False
+        self._report_method = report_method     # tell outside world about our state and time
+        self.clock = None                   # clock object
+        self.clock_is_running = False       # True, if clock is running
+        self.state_label = ""               # label (name) of current state - just to report
         self.duration_of_state = 0          # duration of current state
         self.elapsed_time_in_state = 0      # elapsed time in this state
         self.next_state = 0
         self.state_load(self.next_state)
-        # ... continue ...
+
+    def state_load(self, state_num):
+        self.state_label, self.duration_of_state, self.next_state = self._states[state_num]
+        self.elapsed_time_in_state = 0
+        self._report_method(self.NEW_STATE, self.state_label, self.duration_of_state, self.elapsed_time_in_state)
+
+    def state_next(self):
+        self._stop_clock()
+        if self.next_state == -1:
+            self._report_method(self.FINISHED, "", 0, 0)
+        else:
+            self.state_load(self.next_state)
+            self._start_clock()
+
+    def time_tick(self, dt):
+        self.elapsed_time_in_state += dt
+        if self.elapsed_time_in_state >= self.duration_of_state:
+            self.state_next()
+        else:
+            self._report_method(self.RUN_STATE, self.state_label, self.duration_of_state, self.elapsed_time_in_state)
+
+    def _start_clock(self):
+        self.elapsed_time_in_state = 0
+        self.clock = Clock.schedule_interval(self.time_tick, 0.1)
+        self.clock_is_running = True
+
+    def _stop_clock(self):
+        self.clock.cancel()
+        self.clock_is_running = False
+
+    def start_stop_clock(self):
+        if self.clock_is_running:
+            # user wants to stop
+            self._stop_clock()
+            # so it's safe to begin with first state
+            self.state_load(0)
+        else:
+            self._start_clock()
 
 
 class SquareBreath(FloatLayout):
@@ -28,11 +71,7 @@ class SquareBreath(FloatLayout):
                        2: ("Hold Breath", 3, 3),
                        3: ("Breathe out...", 5, 4),
                        4: ("Hold Breath", 4, 1)}
-        self.clock = None
-        self.clock_is_running = False
-        self.duration_of_state = 0          # duration of current state
-        self.elapsed_time_in_state = 0      # elapsed time in this state
-        self.next_state = 0
+
         self.add_widget(Label(text="Square Breath", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
         self.label_todo = Label(text="ToDo", font_size="30pt",  size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.55})
         self.add_widget(self.label_todo)
@@ -42,7 +81,6 @@ class SquareBreath(FloatLayout):
                                on_press=self.on_startstop_press))
         self.add_widget(Button(text="back", size_hint=(0.1, 0.1), pos_hint={'x': 0.05, 'y': 0.9},
                                on_press=self.on_backbutton_press))
-        self.state_load(self.next_state)
 
         with self.canvas:
             Color(0, 1, 0, .5, mode='rgba')
@@ -54,42 +92,23 @@ class SquareBreath(FloatLayout):
 
         self.bind(pos=self.update_rect)
         self.bind(size=self.update_rect)
+        self.clock = StateClock(self.states, self.stateclock_reports)
+
+    def stateclock_reports(self, reason, label, duration, time):
+        self.label_todo.text = label
+        if reason == StateClock.NEW_STATE:
+            self.label_time.text = '{:d} s'.format(round(duration))
+        elif reason == StateClock.RUN_STATE:
+            self.label_time.text = '{:d} s'.format(round(duration - time))
+        else:
+            # "Finished" should not happen in this module
+            pass
 
     def on_startstop_press(self, _instance):
-        if self.clock_is_running:
-            self.clock.cancel()
-            self.clock_is_running = False
-            self.state_load(0)
-        else:
-            self.state_run()
+        self.clock.start_stop_clock()
 
     def on_backbutton_press(self, _instance):
         pass
-
-    def state_load(self, state_num):
-        self.label_todo.text, self.duration_of_state, self.next_state = self.states[state_num]
-        self.label_time.text = '{:d} s'.format(round(self.duration_of_state))
-
-    def state_run(self):
-        self.elapsed_time_in_state = 0
-        self.clock = Clock.schedule_interval(self.time_tick, 0.1)
-        self.clock_is_running = True
-
-    def state_next(self):
-        if self.next_state == -1:
-            self.state_load(0)
-        else:
-            self.state_load(self.next_state)
-            self.state_run()
-
-    def time_tick(self, dt):
-        self.elapsed_time_in_state += dt
-        if self.elapsed_time_in_state >= self.duration_of_state:
-            self.clock.cancel()
-            self.clock_is_running = False
-            self.state_next()
-        else:
-            self.label_time.text = '{:d} s'.format(round(self.duration_of_state - self.elapsed_time_in_state))
 
     def update_rect(self, *_args):
         width, height = self.size
