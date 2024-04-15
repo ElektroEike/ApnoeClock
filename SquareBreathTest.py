@@ -1,64 +1,9 @@
 from kivy.app import App
-from kivy.clock import Clock
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.graphics import Ellipse, Color, Line
-
-
-class StateClock:
-    NEW_STATE = 1
-    RUN_STATE = 2
-    FINISHED = 3
-
-    def __init__(self, state_dict, report_method):
-        self._states = state_dict
-        self._report_method = report_method     # tell outside world about our state and time
-        self.clock = None                   # clock object
-        self.clock_is_running = False       # True, if clock is running
-        self.state_label = ""               # label (name) of current state - just to report
-        self.duration_of_state = 0          # duration of current state
-        self.elapsed_time_in_state = 0      # elapsed time in this state
-        self.next_state = 0
-        self.state_load(self.next_state)
-
-    def state_load(self, state_num):
-        self.state_label, self.duration_of_state, self.next_state = self._states[state_num]
-        self.elapsed_time_in_state = 0
-        self._report_method(self.NEW_STATE, self.state_label, self.duration_of_state, self.elapsed_time_in_state)
-
-    def state_next(self):
-        self._stop_clock()
-        if self.next_state == -1:
-            self._report_method(self.FINISHED, "", 0, 0)
-        else:
-            self.state_load(self.next_state)
-            self._start_clock()
-
-    def time_tick(self, dt):
-        self.elapsed_time_in_state += dt
-        if self.elapsed_time_in_state >= self.duration_of_state:
-            self.state_next()
-        else:
-            self._report_method(self.RUN_STATE, self.state_label, self.duration_of_state, self.elapsed_time_in_state)
-
-    def _start_clock(self):
-        self.elapsed_time_in_state = 0
-        self.clock = Clock.schedule_interval(self.time_tick, 0.1)
-        self.clock_is_running = True
-
-    def _stop_clock(self):
-        self.clock.cancel()
-        self.clock_is_running = False
-
-    def start_stop_clock(self):
-        if self.clock_is_running:
-            # user wants to stop
-            self._stop_clock()
-            # so it's safe to begin with first state
-            self.state_load(0)
-        else:
-            self._start_clock()
+from stateclock import StateClock
 
 
 class SquareBreath(FloatLayout):

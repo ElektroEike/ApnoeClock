@@ -2,7 +2,7 @@ from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.graphics import Color, Ellipse, Rectangle
+from kivy.graphics import Color, Rectangle
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 from maxtimescreen import MaxTimeScreen
@@ -11,7 +11,7 @@ from maxtimescreen import MaxTimeScreen
 class MenuScreen(Screen):
     def __init__(self, **kwargs):
         super(MenuScreen, self).__init__(**kwargs)
-        layout = BoxLayout(orientation='vertical', size_hint=(.8, .8), pos_hint={'center_x':0.5, 'center_y': 0.5})
+        layout = BoxLayout(orientation='vertical', size_hint=(.8, .8), pos_hint={'center_x': 0.5, 'center_y': 0.5})
         self.add_widget(layout)
         layout.add_widget(Button(text="Maximalversuch", on_press=self.on_maxtime_press))
         layout.add_widget(Button(text="Intervallatmung"))
@@ -43,7 +43,7 @@ class WidgetApp(App):
         manager = ScreenManager()
         manager.add_widget(MenuScreen(name="MenuScreen"))
         manager.add_widget(MaxTimeScreen(name="MaxTimeScreen", parent_name="MenuScreen"))
-        manager.current="MenuScreen"
+        manager.current = "MenuScreen"
         return manager
 
 
