@@ -7,7 +7,7 @@ from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
-from kivy.graphics import Ellipse, Color, Line
+from kivy.graphics import Ellipse, Color
 from stateclock import StateClock
 
 
@@ -16,20 +16,13 @@ class Co2Table(FloatLayout):
         super(Co2Table, self).__init__(**kwargs)
         # 8 turns of apnea and breathing
         self.states = {0: ("Prepare...", 3, 1),
-                       1: ("Hold Breath", 3, 2),
-                       2: ("Breathe...", 3, 3),
-                       3: ("Hold Breath", 3, 4),
-                       4: ("Breathe...", 3, 5),
-                       5: ("Hold Breath", 3, 6),
-                       6: ("Breathe...", 3, 7),
-                       7: ("Hold Breath", 3, 8),
-                       8: ("Breathe...", 3, 9),
-                       9: ("Hold Breath", 3, 10),
-                       10: ("Breathe...", 3, 11),
-                       11: ("Hold Breath", 3, 12),
-                       12: ("Breathe...", 3, 13),
-                       13: ("Hold Breath", 3, 14),
-                       14: ("Breathe...", 3, 15),
+                       1: ("Hold Breath", 3, 2), 2: ("Breathe...", 3, 3),
+                       3: ("Hold Breath", 3, 4), 4: ("Breathe...", 3, 5),
+                       5: ("Hold Breath", 3, 6), 6: ("Breathe...", 3, 7),
+                       7: ("Hold Breath", 3, 8), 8: ("Breathe...", 3, 9),
+                       9: ("Hold Breath", 3, 10), 10: ("Breathe...", 3, 11),
+                       11: ("Hold Breath", 3, 12), 12: ("Breathe...", 3, 13),
+                       13: ("Hold Breath", 3, 14), 14: ("Breathe...", 3, 15),
                        15: ("Hold Breath", 3, -1)}
 
         self.add_widget(Label(text="CO2 Table", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
@@ -64,9 +57,9 @@ class Co2Table(FloatLayout):
             self.current_state_num += 1
             if self.current_state_num >= 0:
                 index = self.current_state_num // 2
-                if self.current_state_num % 2 == 0:
+                if self.current_state_num % 2 == 0:         # apnea
                     self.colors[index].rgb = [1, 0, 0]
-                else:
+                else:                                       # breathe
                     self.colors[index].rgb = [0, 1, 0]
         elif reason == StateClock.RUN_STATE:
             self.label_time.text = '{:d} s'.format(round(duration - time))
