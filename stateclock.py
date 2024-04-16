@@ -25,7 +25,6 @@
     The last state follows the state with the number "-1", which indicates, we are finished.
 
     TODO:
-    - Implment finite clock
     - CONSTANT for a FINITE STATE
     - document report method
 """
@@ -40,7 +39,6 @@ class StateClock:
 
     def __init__(self, state_dict, report_method):
         """the states and a method to report to the outside world """
-
         self._states = state_dict
         self._report_method = report_method     # tell outside world about our state and time
         self.clock = None                   # clock object
