@@ -78,7 +78,6 @@ class Co2TableScreen(Screen):
     def on_backbutton_press(self, _instance):
         self.manager.current=self.parent_screen_name
 
-
     def update_rect(self, *_args):
         width, height = self.size
         size = min(width, height) / 20

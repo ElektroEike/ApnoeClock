@@ -4,7 +4,6 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.graphics import Color, Rectangle
 from kivy.uix.screenmanager import ScreenManager, Screen
-
 from maxtimescreen import MaxTimeScreen
 from co2tablescreen import Co2TableScreen
 
