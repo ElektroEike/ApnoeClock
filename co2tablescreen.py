@@ -14,8 +14,9 @@ from stateclock import StateClock
 
 
 class Co2TableScreen(Screen):
-    def __init__(self, **kwargs):
+    def __init__(self, parentname, **kwargs):
         super(Co2TableScreen, self).__init__(**kwargs)
+        self.parent_screen_name = parentname
         # 8 turns of apnea and breathing
         self.states = {0: ("Prepare...", 3, 1),
                        1: ("Hold Breath", 3, 2), 2: ("Breathe...", 3, 3),
@@ -54,7 +55,6 @@ class Co2TableScreen(Screen):
         self.clock = StateClock(self.states, self.stateclock_reports)
 
     def stateclock_reports(self, reason, label, duration, time):
-        print("tick")
         self.label_todo.text = label
         if reason == StateClock.NEW_STATE:
             self.label_time.text = '{:d} s'.format(round(duration))
@@ -76,7 +76,8 @@ class Co2TableScreen(Screen):
         self.clock.start_stop_clock()
 
     def on_backbutton_press(self, _instance):
-        pass
+        self.manager.current=self.parent_screen_name
+
 
     def update_rect(self, *_args):
         width, height = self.size

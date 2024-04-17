@@ -8,12 +8,9 @@ import math
 
 
 class MaxTimeScreen(Screen):
-    def __init__(self, **kwargs):
-        self.parent_name = kwargs['parent_name']
-        # following super() does not like our parent screen name :-(
-        # raises KeyError, if no parent name was given - that's a good test
-        del kwargs['parent_name']
+    def __init__(self, parentname, **kwargs):
         super(MaxTimeScreen, self).__init__(**kwargs)
+        self.parent_screen_name = parentname
         self.clock = None
         self.clock_is_running = False
         self.elapsed_time = 0
@@ -51,7 +48,7 @@ class MaxTimeScreen(Screen):
         self.timer_label.text = time_text
 
     def on_backbutton_press(self, _instance):
-        self.manager.current = self.parent_name
+        self.manager.current = self.parent_screen_name
 
     def update_rect(self, _instance, _value):
         with self.layout.canvas.before:

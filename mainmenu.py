@@ -1,6 +1,5 @@
 """ This file is part of ApnoeClock, a timer application for apnoe divers."""
 from kivy.app import App
-from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.graphics import Color, Rectangle
@@ -22,7 +21,6 @@ class MenuScreen(Screen):
         layout.add_widget(Button(text="Auswertung"))
         layout.add_widget(Button(text="Einstellung"))
         layout.add_widget(Button(text="About"))
-
         self.bind(size=self.update_rect)
 
     def update_rect(self, _instance, _value):
@@ -37,21 +35,15 @@ class MenuScreen(Screen):
         self.manager.current = "Co2TableScreen"
 
 
-class SquareBreatheScreen(Screen):
-    def __init__(self, **kwargs):
-        super(SquareBreatheScreen, self).__init__(**kwargs)
-        self.add_widget(Label(text=self.name))
-
-
-class WidgetApp(App):
+class ApnoeClockApp(App):
     def build(self):
         manager = ScreenManager()
         manager.add_widget(MenuScreen(name="MenuScreen"))
-        manager.add_widget(MaxTimeScreen(name="MaxTimeScreen", parent_name="MenuScreen"))
-        manager.add_widget(Co2TableScreen(name="Co2TableScreen"))
+        manager.add_widget(MaxTimeScreen("MenuScreen", name="MaxTimeScreen"))
+        manager.add_widget(Co2TableScreen("MenuScreen", name="Co2TableScreen"))
         manager.current = "MenuScreen"
         return manager
 
 
 if __name__ == '__main__':
-    WidgetApp().run()
+    ApnoeClockApp().run()
