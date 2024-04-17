@@ -43,7 +43,12 @@ class ApnoeClockApp(App):
     def build(self):
         connection = sqlite3.connect("apnoeclock.db")
         cursor = connection.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS maxtime(date DATE, time UNSIGNED INT)")
+        cursor.execute("CREATE TABLE IF NOT EXISTS maxtime(date DATE, time UNSIGNED INT, PRIMARY KEY(date))")
+        cursor.execute("SELECT COUNT(*) FROM maxtime")
+        row = cursor.fetchone()
+        if row[0] == 0:
+            # just a record
+            cursor.execute("INSERT INTO maxtime VALUES('2000-01-02', '10')")
         connection.commit()
         connection.close()
         manager = ScreenManager()
