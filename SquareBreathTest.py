@@ -27,13 +27,17 @@ class SquareBreath(FloatLayout):
         self.add_widget(Button(text="back", size_hint=(0.1, 0.1), pos_hint={'x': 0.05, 'y': 0.9},
                                on_press=self.on_backbutton_press))
 
+        self.colors = []
+        self.ellipses = []
+        self.lines = []
+        self.points = []        # filled and updated in update_rect()
         with self.canvas:
-            Color(0, 1, 0, .5, mode='rgba')
-            self.eli1 = Ellipse(size=(10, 10), size_hint=(None, None))
-            self.eli2 = Ellipse(size=(10, 10), size_hint=(None, None))
-            self.eli3 = Ellipse(size=(10, 10), size_hint=(None, None))
-            self.eli4 = Ellipse(size=(10, 10), size_hint=(None, None))
-            self.line1 = Line()
+            for i in range(0, 4):
+                self.colors.append(Color(0, 0, 1, .5, mode='rgba'))
+                self.ellipses.append(Ellipse(size=(0, 0), size_hint=(None, None)))
+                self.lines.append(Line())
+
+        self.current_state_num = -2     # start after preparation
 
         self.bind(pos=self.update_rect)
         self.bind(size=self.update_rect)
@@ -42,12 +46,24 @@ class SquareBreath(FloatLayout):
     def stateclock_reports(self, reason, label, duration, time):
         self.label_todo.text = label
         if reason == StateClock.NEW_STATE:
+            self.current_state_num = self.current_state_num + 1
+            if self.current_state_num >= 0:
+                self.current_state_num = self.current_state_num % 4
+                self._set_color_from_state(self.current_state_num)
             self.label_time.text = '{:d} s'.format(round(duration))
         elif reason == StateClock.RUN_STATE:
             self.label_time.text = '{:d} s'.format(round(duration - time))
         else:
             # "Finished" should not happen in this module
             pass
+
+    def _set_color_from_state(self, statenum ):
+        self.colors[0].rgba = (0, 0, 1, 0.5)
+        self.colors[1].rgba = (0, 0, 1, 0.5)
+        self.colors[2].rgba = (0, 0, 1, 0.5)
+        self.colors[3].rgba = (0, 0, 1, 0.5)
+        for i in range(statenum + 1):
+            self.colors[i].rgba = (0, 1, 0, 1)
 
     def on_startstop_press(self, _instance):
         self.clock.start_stop_clock()
@@ -66,20 +82,24 @@ class SquareBreath(FloatLayout):
         y0 = 8 * height / 10
         y1 = 5 * height / 10
         # position of circles
-        self.eli1.size = (eli_size, eli_size)
-        self.eli1.pos = (x0, y0)
-        self.eli2.size = (eli_size, eli_size)
-        self.eli2.pos = (x1, y0)
-        self.eli3.size = (eli_size, eli_size)
-        self.eli3.pos = (x0, y1)
-        self.eli4.size = (eli_size, eli_size)
-        self.eli4.pos = (x1, y1)
+        self.ellipses[0].size = (eli_size, eli_size)
+        self.ellipses[0].pos = (x0, y0)
+        self.ellipses[1].size = (eli_size, eli_size)
+        self.ellipses[1].pos = (x1, y0)
+        self.ellipses[2].size = (eli_size, eli_size)
+        self.ellipses[2].pos = (x0, y1)
+        self.ellipses[3].size = (eli_size, eli_size)
+        self.ellipses[3].pos = (x1, y1)
         # draw rect connecting all points
-        self.line1.points = [x0+eli_size_half, y0+eli_size_half,
-                             x1+eli_size_half, y0+eli_size_half,
-                             x1+eli_size_half, y1+eli_size_half,
-                             x0+eli_size_half, y1+eli_size_half,
-                             x0+eli_size_half, y0+eli_size_half]
+        self.points= [x0+eli_size_half, y0+eli_size_half,
+                      x1+eli_size_half, y0+eli_size_half,
+                      x1+eli_size_half, y1+eli_size_half,
+                      x0+eli_size_half, y1+eli_size_half,
+                      x0+eli_size_half, y0+eli_size_half]
+        self.lines[0].points = self.points[0:4]
+        self.lines[1].points = self.points[2:6]
+        self.lines[2].points = self.points[4:8]
+        self.lines[3].points = self.points[6:10]
 
 
 class WidgetApp(App):
