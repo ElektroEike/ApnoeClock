@@ -4,6 +4,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.graphics import Color, Rectangle
 from kivy.uix.screenmanager import ScreenManager, Screen
+import sqlite3
 from maxtimescreen import MaxTimeScreen
 from squarebreathscreen import SquareBreathScreen
 from co2tablescreen import Co2TableScreen
@@ -40,6 +41,11 @@ class MenuScreen(Screen):
 
 class ApnoeClockApp(App):
     def build(self):
+        connection = sqlite3.connect("apnoeclock.db")
+        cursor = connection.cursor()
+        cursor.execute("CREATE TABLE IF NOT EXISTS maxtime(date DATE, time UNSIGNED INT)")
+        connection.commit()
+        connection.close()
         manager = ScreenManager()
         manager.add_widget(MenuScreen(name="MenuScreen"))
         manager.add_widget(MaxTimeScreen("MenuScreen", name="MaxTimeScreen"))

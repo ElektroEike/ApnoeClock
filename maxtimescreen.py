@@ -5,6 +5,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 import math
+import sqlite3
 
 
 class MaxTimeScreen(Screen):
@@ -31,7 +32,7 @@ class MaxTimeScreen(Screen):
             self.clock.cancel()
             self.action_button.text = "Start"
         else:
-            self.elapsed_time = 50
+            self.elapsed_time = 0
             self.clock = Clock.schedule_interval(self.clock_callback, 0.1)
             self.action_button.text = "Stop"
         self.clock_is_running = not self.clock_is_running
@@ -48,6 +49,8 @@ class MaxTimeScreen(Screen):
         self.timer_label.text = time_text
 
     def on_backbutton_press(self, _instance):
+        if self.clock_is_running:
+            self.clock.cancel()
         self.manager.current = self.parent_screen_name
 
     def update_rect(self, _instance, _value):
