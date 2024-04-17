@@ -1,6 +1,6 @@
 from kivy.uix.button import Button
 from kivy.uix.label import Label
-from kivy.graphics import Ellipse, Color, Line
+from kivy.graphics import Ellipse, Color, Line, Rectangle
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen
 from stateclock import StateClock
@@ -22,13 +22,13 @@ class SquareBreathScreen(Screen):
         self.add_widget(self.layout)
 
         self.layout.add_widget(Label(text="Square Breath", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
-        self.label_todo = Label(text="ToDo", font_size="30pt",  size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.54})
+        self.label_todo = Label(text="ToDo", font_size="30pt",  size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.56})
         self.layout.add_widget(self.label_todo)
-        self.label_time = Label(text="00:00", font_size="30pt", size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.45})
+        self.label_time = Label(text="00:00", font_size="30pt", size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.48})
         self.layout.add_widget(self.label_time)
-        self.layout.add_widget(Button(text="Start/Stop", size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.05},
+        self.layout.add_widget(Button(text="Start/Stop", size_hint=(0.98, 0.5), pos_hint={'x': 0.01, 'y': 0.01},
                                on_press=self.on_startstop_press))
-        self.layout.add_widget(Button(text="back", size_hint=(0.1, 0.1), pos_hint={'x': 0.05, 'y': 0.9},
+        self.layout.add_widget(Button(text="back", size_hint=(0.2, 0.1), pos_hint={'x': 0.01, 'y': 0.89},
                                on_press=self.on_backbutton_press))
 
         self.colors = []
@@ -92,13 +92,17 @@ class SquareBreathScreen(Screen):
         self.manager.current = self.parent_screen_name
 
     def update_rect(self, *_args):
+        with self.layout.canvas.before:
+            Color(0.5, 0.5, 0.5)
+            Rectangle(pos=self.layout.pos, size=self.layout.size)
+
         width, height = self.size
         min_size = min(width, height)
         eli_size = min_size / 20
         x0 = width / 10
         x1 = 9 * width / 10 - eli_size
-        y0 = 8 * height / 10
-        y1 = 5 * height / 10
+        y0 = 8.3 * height / 10
+        y1 = 5.3 * height / 10
         # position of circles
         self.ellipses[0].size = (eli_size, eli_size)
         self.ellipses[0].pos = (x0, y0)

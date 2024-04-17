@@ -4,6 +4,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.graphics import Color, Rectangle
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.config import Config
 import sqlite3
 from maxtimescreen import MaxTimeScreen
 from squarebreathscreen import SquareBreathScreen
@@ -61,4 +62,6 @@ class ApnoeClockApp(App):
 
 
 if __name__ == '__main__':
+    Config.set('graphics', 'width', '432')
+    Config.set('graphics', 'height', '768')
     ApnoeClockApp().run()

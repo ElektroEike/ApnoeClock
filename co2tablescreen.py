@@ -5,7 +5,7 @@
 """
 from kivy.uix.button import Button
 from kivy.uix.label import Label
-from kivy.graphics import Ellipse, Color
+from kivy.graphics import Ellipse, Color, Rectangle
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen
 from stateclock import StateClock
@@ -30,13 +30,13 @@ class Co2TableScreen(Screen):
         self.add_widget(self.layout)
 
         self.layout.add_widget(Label(text="CO2 Table", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
-        self.label_todo = Label(text="ToDo", font_size="30pt", size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.55})
+        self.label_todo = Label(text="ToDo", font_size="30pt", size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.56})
         self.layout.add_widget(self.label_todo)
-        self.label_time = Label(text="00:00", font_size="30pt", size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.45})
+        self.label_time = Label(text="00:00", font_size="30pt", size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.48})
         self.layout.add_widget(self.label_time)
-        self.layout.add_widget(Button(text="Start/Stop", size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.05},
+        self.layout.add_widget(Button(text="Start/Stop", size_hint=(0.98, 0.5), pos_hint={'x': 0.01, 'y': 0.01},
                                on_press=self.on_startstop_press))
-        self.layout.add_widget(Button(text="back", size_hint=(0.1, 0.1), pos_hint={'x': 0.05, 'y': 0.9},
+        self.layout.add_widget(Button(text='Ttback😀', font_name='DejaVuSans', size_hint=(0.2, 0.1), pos_hint={'x': 0.01, 'y': 0.89},
                                on_press=self.on_backbutton_press))
 
         self.colors = []
@@ -77,9 +77,13 @@ class Co2TableScreen(Screen):
         self.manager.current =self.parent_screen_name
 
     def update_rect(self, *_args):
+        with self.layout.canvas.before:
+            Color(0.5, 0.5, 0.5)
+            Rectangle(pos=self.layout.pos, size=self.layout.size)
+
         width, height = self.size
         size = min(width, height) / 20
-        y = 5 * height / 10
+        y = 6 * height / 10
         for index, elipse in enumerate(self.ellipses):
             elipse.size = (size, size)
             x = (index + 1) * width / 10
