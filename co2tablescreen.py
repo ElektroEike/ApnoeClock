@@ -3,13 +3,11 @@
     Training:
     Prepare - Apnea 30 s - Breathe a time, Apnea 30 s, Breathe a shorter time and so on. 8 rounds.
 """
-from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.graphics import Ellipse, Color
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen
-
 from stateclock import StateClock
 
 
@@ -76,7 +74,7 @@ class Co2TableScreen(Screen):
         self.clock.start_stop_clock()
 
     def on_backbutton_press(self, _instance):
-        self.manager.current=self.parent_screen_name
+        self.manager.current =self.parent_screen_name
 
     def update_rect(self, *_args):
         width, height = self.size

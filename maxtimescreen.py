@@ -54,4 +54,3 @@ class MaxTimeScreen(Screen):
         with self.layout.canvas.before:
             Color(1, 0.5, 0.5)
             Rectangle(pos=self.layout.pos, size=self.layout.size)
-            print("update", self.layout.pos, self.layout.size)
