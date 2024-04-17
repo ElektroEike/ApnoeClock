@@ -5,15 +5,17 @@
 """
 from kivy.app import App
 from kivy.uix.button import Button
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.graphics import Ellipse, Color
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.screenmanager import Screen
+
 from stateclock import StateClock
 
 
-class Co2Table(FloatLayout):
+class Co2TableScreen(Screen):
     def __init__(self, **kwargs):
-        super(Co2Table, self).__init__(**kwargs)
+        super(Co2TableScreen, self).__init__(**kwargs)
         # 8 turns of apnea and breathing
         self.states = {0: ("Prepare...", 3, 1),
                        1: ("Hold Breath", 3, 2), 2: ("Breathe...", 3, 3),
@@ -25,14 +27,17 @@ class Co2Table(FloatLayout):
                        13: ("Hold Breath", 3, 14), 14: ("Breathe...", 3, 15),
                        15: ("Hold Breath", 3, -1)}
 
-        self.add_widget(Label(text="CO2 Table", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
+        self.layout = FloatLayout(size_hint=(1, 1))
+        self.add_widget(self.layout)
+
+        self.layout.add_widget(Label(text="CO2 Table", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
         self.label_todo = Label(text="ToDo", font_size="30pt", size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.55})
-        self.add_widget(self.label_todo)
+        self.layout.add_widget(self.label_todo)
         self.label_time = Label(text="00:00", font_size="30pt", size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.45})
-        self.add_widget(self.label_time)
-        self.add_widget(Button(text="Start/Stop", size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.05},
+        self.layout.add_widget(self.label_time)
+        self.layout.add_widget(Button(text="Start/Stop", size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.05},
                                on_press=self.on_startstop_press))
-        self.add_widget(Button(text="back", size_hint=(0.1, 0.1), pos_hint={'x': 0.05, 'y': 0.9},
+        self.layout.add_widget(Button(text="back", size_hint=(0.1, 0.1), pos_hint={'x': 0.05, 'y': 0.9},
                                on_press=self.on_backbutton_press))
 
         self.colors = []
@@ -53,7 +58,6 @@ class Co2Table(FloatLayout):
         self.label_todo.text = label
         if reason == StateClock.NEW_STATE:
             self.label_time.text = '{:d} s'.format(round(duration))
-
             self.current_state_num += 1
             if self.current_state_num >= 0:
                 index = self.current_state_num // 2
@@ -82,12 +86,3 @@ class Co2Table(FloatLayout):
             elipse.size = (size, size)
             x = (index + 1) * width / 10
             elipse.pos = (x, y)
-
-
-class WidgetApp(App):
-    def build(self):
-        return Co2Table()
-
-
-if __name__ == '__main__':
-    WidgetApp().run()

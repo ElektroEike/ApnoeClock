@@ -1,3 +1,4 @@
+""" This file is part of ApnoeClock, a timer application for apnoe divers."""
 from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
@@ -6,6 +7,7 @@ from kivy.graphics import Color, Rectangle
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 from maxtimescreen import MaxTimeScreen
+from co2tablescreen import Co2TableScreen
 
 
 class MenuScreen(Screen):
@@ -15,7 +17,7 @@ class MenuScreen(Screen):
         self.add_widget(layout)
         layout.add_widget(Button(text="Maximalversuch", on_press=self.on_maxtime_press))
         layout.add_widget(Button(text="Intervallatmung"))
-        layout.add_widget(Button(text="CO_2-Tabelle"))
+        layout.add_widget(Button(text="CO_2-Tabelle", on_press=self.on_co2table_press))
         layout.add_widget(Button(text="O_2-Tabelle"))
         layout.add_widget(Button(text="Auswertung"))
         layout.add_widget(Button(text="Einstellung"))
@@ -31,6 +33,9 @@ class MenuScreen(Screen):
     def on_maxtime_press(self, _instance):
         self.manager.current = "MaxTimeScreen"
 
+    def on_co2table_press(self, _instance):
+        self.manager.current = "Co2TableScreen"
+
 
 class SquareBreatheScreen(Screen):
     def __init__(self, **kwargs):
@@ -43,6 +48,7 @@ class WidgetApp(App):
         manager = ScreenManager()
         manager.add_widget(MenuScreen(name="MenuScreen"))
         manager.add_widget(MaxTimeScreen(name="MaxTimeScreen", parent_name="MenuScreen"))
+        manager.add_widget(Co2TableScreen(name="Co2TableScreen"))
         manager.current = "MenuScreen"
         return manager
 
