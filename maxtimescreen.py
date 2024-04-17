@@ -20,12 +20,22 @@ class MaxTimeScreen(Screen):
         self.layout.add_widget(Label(text="Maximalversuch", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
         self.timer_label = Label(text="00:00", font_size="30pt",  size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.6})
         self.layout.add_widget(self.timer_label)
-        self.action_button = Button(text="Start", size_hint=(0.9, 0.5), pos_hint={'x': 0.05, 'y': 0.1},
+        self.action_button = Button(text="Start", size_hint=(0.98, 0.5), pos_hint={'x': 0.01, 'y': 0.01},
                                     on_press=self.on_actionbutton_press)
         self.layout.add_widget(self.action_button)
-        self.layout.add_widget(Button(text="back", size_hint=(0.1, 0.1), pos_hint={'x': 0.05, 'y': 0.9},
+        self.layout.add_widget(Button(text="back", size_hint=(0.2, 0.1), pos_hint={'x': 0.01, 'y': 0.89},
                                       on_press=self.on_backbutton_press))
         self.layout.bind(size=self.update_rect)
+
+    def on_enter(self, *args):
+        self.elapsed_time = 0
+        self.action_button.text = "Start"
+        self.timer_label.text = "00:00"
+
+    def on_leave(self, *args):
+        if self.clock_is_running:
+            self.clock.cancel()
+        self.clock_is_running = False
 
     def on_actionbutton_press(self, _instance):
         if self.clock_is_running:
@@ -49,11 +59,9 @@ class MaxTimeScreen(Screen):
         self.timer_label.text = time_text
 
     def on_backbutton_press(self, _instance):
-        if self.clock_is_running:
-            self.clock.cancel()
         self.manager.current = self.parent_screen_name
 
     def update_rect(self, _instance, _value):
         with self.layout.canvas.before:
-            Color(1, 0.5, 0.5)
+            Color(0.5, 0.5, 0.5)
             Rectangle(pos=self.layout.pos, size=self.layout.size)
