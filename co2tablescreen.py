@@ -52,6 +52,13 @@ class Co2TableScreen(Screen):
         self.bind(size=self.update_rect)
         self.clock = StateClock(self.states, self.stateclock_reports)
 
+    def on_enter(self, *args):
+        self._reset()
+
+    def on_leave(self, *args):
+        self.clock.reset()
+        self._reset_color()
+
     def stateclock_reports(self, reason, label, duration, time):
         self.label_todo.text = label
         if reason == StateClock.NEW_STATE:
@@ -70,8 +77,20 @@ class Co2TableScreen(Screen):
             self.label_time.text = 'Congratulation!'
             self.colors[self.current_state_num//2].rgb = [0, 1, 0]
 
+    def _reset_color(self):
+        for i in range(0, 8):
+            self.colors[i].rgba = [0, 0, 1, 0.5]
+
+    def _reset(self):
+        self._reset_color()
+        self.current_state_num = -2
+        self.clock.init()
+
     def on_startstop_press(self, _instance):
-        self.clock.start_stop_clock()
+        running = self.clock.start_stop_clock()
+        if not running:
+            self._reset()
+
 
     def on_backbutton_press(self, _instance):
         self.manager.current =self.parent_screen_name
