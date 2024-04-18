@@ -34,10 +34,12 @@ class Co2TableScreen(Screen):
         self.layout.add_widget(self.label_todo)
         self.label_time = Label(text="00:00", font_size="30pt", size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.48})
         self.layout.add_widget(self.label_time)
-        self.layout.add_widget(Button(text="Start/Stop", size_hint=(0.98, 0.5), pos_hint={'x': 0.01, 'y': 0.01},
-                               on_press=self.on_startstop_press))
-        self.layout.add_widget(Button(text='Ttback😀', font_name='DejaVuSans', size_hint=(0.2, 0.1), pos_hint={'x': 0.01, 'y': 0.89},
-                               on_press=self.on_backbutton_press))
+        self.action_button = Button(text="Start", size_hint=(0.98, 0.5), pos_hint={'x': 0.01, 'y': 0.01},
+                                    on_press=self.on_startstop_press)
+        self.layout.add_widget(self.action_button)
+        self.layout.add_widget(Button(text='↩', font_name='DejaVuSans', font_size="20pt",
+                                      size_hint=(0.2, 0.1), pos_hint={'x': 0.01, 'y': 0.89},
+                                      on_press=self.on_backbutton_press))
 
         self.colors = []
         self.ellipses = []
@@ -53,7 +55,7 @@ class Co2TableScreen(Screen):
         self.clock = StateClock(self.states, self.stateclock_reports)
 
     def on_enter(self, *args):
-        self._reset()
+        self._prepare()
 
     def on_leave(self, *args):
         self.clock.reset()
@@ -81,19 +83,22 @@ class Co2TableScreen(Screen):
         for i in range(0, 8):
             self.colors[i].rgba = [0, 0, 1, 0.5]
 
-    def _reset(self):
+    def _prepare(self):
+        """ prepare for next start """
+        self.action_button.text = "Start"
         self._reset_color()
         self.current_state_num = -2
         self.clock.init()
 
     def on_startstop_press(self, _instance):
         running = self.clock.start_stop_clock()
-        if not running:
-            self._reset()
-
+        if running:
+            self.action_button.text = "Stop"
+        else:
+            self._prepare()
 
     def on_backbutton_press(self, _instance):
-        self.manager.current =self.parent_screen_name
+        self.manager.current = self.parent_screen_name
 
     def update_rect(self, *_args):
         with self.layout.canvas.before:

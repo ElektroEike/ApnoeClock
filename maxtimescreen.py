@@ -25,7 +25,8 @@ class MaxTimeScreen(Screen):
         self.action_button = Button(text="Start", size_hint=(0.98, 0.5), pos_hint={'x': 0.01, 'y': 0.01},
                                     on_press=self.on_actionbutton_press)
         self.layout.add_widget(self.action_button)
-        self.layout.add_widget(Button(text="back", size_hint=(0.2, 0.1), pos_hint={'x': 0.01, 'y': 0.89},
+        self.layout.add_widget(Button(text='↩', font_name='DejaVuSans', font_size="20pt",
+                                      size_hint=(0.2, 0.1), pos_hint={'x': 0.01, 'y': 0.89},
                                       on_press=self.on_backbutton_press))
         self.layout.bind(size=self.update_rect)
 

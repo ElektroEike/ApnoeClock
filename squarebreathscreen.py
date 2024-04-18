@@ -26,10 +26,12 @@ class SquareBreathScreen(Screen):
         self.layout.add_widget(self.label_todo)
         self.label_time = Label(text="00:00", font_size="30pt", size_hint=(0.9, 0.4), pos_hint={'x': 0.05, 'y': 0.48})
         self.layout.add_widget(self.label_time)
-        self.layout.add_widget(Button(text="Start/Stop", size_hint=(0.98, 0.5), pos_hint={'x': 0.01, 'y': 0.01},
-                               on_press=self.on_startstop_press))
-        self.layout.add_widget(Button(text="back", size_hint=(0.2, 0.1), pos_hint={'x': 0.01, 'y': 0.89},
-                               on_press=self.on_backbutton_press))
+        self.action_button = Button(text="Start/Stop", size_hint=(0.98, 0.5), pos_hint={'x': 0.01, 'y': 0.01},
+                                    on_press=self.on_startstop_press)
+        self.layout.add_widget(self.action_button)
+        self.layout.add_widget(Button(text='↩', font_name='DejaVuSans', font_size="20pt",
+                                      size_hint=(0.2, 0.1), pos_hint={'x': 0.01, 'y': 0.89},
+                                      on_press=self.on_backbutton_press))
 
         self.colors = []
         self.ellipses = []
@@ -48,7 +50,7 @@ class SquareBreathScreen(Screen):
         self.clock = StateClock(self.states, self.stateclock_reports)
 
     def on_enter(self, *args):
-        self._reset()
+        self._prepare()
 
     def on_leave(self, *args):
         self.clock.reset()
@@ -84,11 +86,12 @@ class SquareBreathScreen(Screen):
         self.lines[2].points = self.points[4:8]
         self.lines[3].points = self.points[6:10]
 
-    def _reset(self):
-        """ reset everything t start values """
+    def _prepare(self):
+        """ for next start """
         self.current_state_num = -2
         self._reset_lines()
         self._reset_color()
+        self.action_button.text = "Start"
         self.clock.init()
 
     def _set_color_from_state(self, statenum):
@@ -110,9 +113,11 @@ class SquareBreathScreen(Screen):
 
     def on_startstop_press(self, _instance):
         running = self.clock.start_stop_clock()
-        if not running:
+        if running:
+            self.action_button.text = "Stop"
+        else:
             # if we stop, we reset everything just in case user wants to start again
-            self._reset()
+            self._prepare()
 
     def on_backbutton_press(self, _instance):
         self.manager.current = self.parent_screen_name
