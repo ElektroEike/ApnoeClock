@@ -47,6 +47,14 @@ class SquareBreathScreen(Screen):
         self.bind(size=self.update_rect)
         self.clock = StateClock(self.states, self.stateclock_reports)
 
+    def on_enter(self, *args):
+        self._reset()
+
+    def on_leave(self, *args):
+        self.clock.reset()
+        self._reset_color()
+        self._reset_lines()
+
     def stateclock_reports(self, reason, label, duration, time):
         self.label_todo.text = label
         if reason == StateClock.NEW_STATE:
@@ -64,19 +72,34 @@ class SquareBreathScreen(Screen):
             # "Finished" should not happen in this module
             pass
 
-    def _set_color_from_state(self, statenum):
+    def _reset_color(self):
         self.colors[0].rgba = (0, 0, 1, 0.5)
         self.colors[1].rgba = (0, 0, 1, 0.5)
         self.colors[2].rgba = (0, 0, 1, 0.5)
         self.colors[3].rgba = (0, 0, 1, 0.5)
-        for i in range(statenum + 1):
-            self.colors[i].rgba = (0, 1, 0, 1)
 
-    def _set_lines_from_state(self, statenum, percent):
+    def _reset_lines(self):
         self.lines[0].points = self.points[0:4]
         self.lines[1].points = self.points[2:6]
         self.lines[2].points = self.points[4:8]
         self.lines[3].points = self.points[6:10]
+
+    def _reset(self):
+        """ reset everything t start values """
+        self.current_state_num = -2
+        self._reset_lines()
+        self._reset_color()
+        self.clock.init()
+
+    def _set_color_from_state(self, statenum):
+        self._reset_color()
+        for i in range(statenum + 1):
+            self.colors[i].rgba = (0, 1, 0, 1)
+
+    def _set_lines_from_state(self, statenum, percent):
+        """ this shows a moving line. Line length is calculated by the
+            percentage of the maximum length. """
+        self._reset_lines()
         # calculate the length of the line
         startindex = statenum * 2
         points = self.points[startindex:startindex + 4]
@@ -86,13 +109,17 @@ class SquareBreathScreen(Screen):
         self.lines[statenum].points = new_points
 
     def on_startstop_press(self, _instance):
-        self.clock.start_stop_clock()
+        running = self.clock.start_stop_clock()
+        if not running:
+            # if we stop, we reset everything just in case user wants to start again
+            self._reset()
 
     def on_backbutton_press(self, _instance):
         self.manager.current = self.parent_screen_name
 
     def update_rect(self, *_args):
         with self.layout.canvas.before:
+            # Background
             Color(0.5, 0.5, 0.5)
             Rectangle(pos=self.layout.pos, size=self.layout.size)
 
@@ -114,7 +141,4 @@ class SquareBreathScreen(Screen):
         self.ellipses[3].pos = (x0, y1)
         # draw rect connecting all points
         self.points = [x0 + eli_size, y0, x1, y0, x1, y1 + eli_size, x0 + eli_size, y1 + eli_size, x0 + eli_size, y0]
-        self.lines[0].points = self.points[0:4]
-        self.lines[1].points = self.points[2:6]
-        self.lines[2].points = self.points[4:8]
-        self.lines[3].points = self.points[6:10]
+        self._reset_lines()
