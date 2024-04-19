@@ -8,6 +8,7 @@ from kivy.uix.label import Label
 from kivy.graphics import Ellipse, Color, Rectangle
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen
+from kivy.clock import Clock
 from stateclock import StateClock
 
 
@@ -17,13 +18,13 @@ class Co2TableScreen(Screen):
         self.parent_screen_name = parentname
         # 8 turns of apnea and breathing
         self.states = {0: ("Prepare...", 3, 1),
-                       1: ("Hold Breath", 3, 2), 2: ("Breathe...", 3, 3),
-                       3: ("Hold Breath", 3, 4), 4: ("Breathe...", 3, 5),
-                       5: ("Hold Breath", 3, 6), 6: ("Breathe...", 3, 7),
-                       7: ("Hold Breath", 3, 8), 8: ("Breathe...", 3, 9),
-                       9: ("Hold Breath", 3, 10), 10: ("Breathe...", 3, 11),
-                       11: ("Hold Breath", 3, 12), 12: ("Breathe...", 3, 13),
-                       13: ("Hold Breath", 3, 14), 14: ("Breathe...", 3, 15),
+                       1: ("Hold Breath", 1, 2), 2: ("Breathe...", 1, 3),
+                       3: ("Hold Breath", 1, 4), 4: ("Breathe...", 2, 5),
+                       5: ("Hold Breath", 1, 6), 6: ("Breathe...", 1, 7),
+                       7: ("Hold Breath", 1, 8), 8: ("Breathe...", 1, 9),
+                       9: ("Hold Breath", 1, 10), 10: ("Breathe...", 1, 11),
+                       11: ("Hold Breath", 1, 12), 12: ("Breathe...", 1, 13),
+                       13: ("Hold Breath", 1, 14), 14: ("Breathe...", 1, 15),
                        15: ("Hold Breath", 3, -1)}
 
         self.layout = FloatLayout(size_hint=(1, 1))
@@ -89,6 +90,7 @@ class Co2TableScreen(Screen):
             self.current_state_num += 1
             if self.current_state_num >= 0:
                 index = self.current_state_num // 2
+                self._set_labels_from_state(self.current_state_num + 1)
                 if self.current_state_num % 2 == 0:         # apnea
                     self.colors[index].rgb = [1, 0, 0]
                 else:                                       # breathe
@@ -97,8 +99,9 @@ class Co2TableScreen(Screen):
             self.label_time.text = '{:d} s'.format(round(duration - time))
         else:
             # finished -> draw the last Elipse
-            self.label_time.text = 'Congratulation!'
             self.colors[self.current_state_num//2].rgb = [0, 1, 0]
+            self.label_todo.text = "Congratulation"
+            Clock.schedule_once(self._prepare, 1)
 
     def _reset_color(self):
         for i in range(0, 8):
@@ -109,13 +112,33 @@ class Co2TableScreen(Screen):
             self.label_todo_states[i].bold = False
             self.label_todo_states[i].color = (1, 1, 1)
 
-    def _prepare(self):
+    def _prepare(self, _dt=None):
         """ prepare for next start """
         self.action_button.text = "Start"
         self._reset_color()
         self._reset_labels()
+        self.label_todo_states[0].text = f'{self.states[1][0]} {self.states[1][1]} s'
+        self.label_todo_states[1].text = f'{self.states[2][0]} {self.states[2][1]} s'
         self.current_state_num = -2
         self.clock.init()
+
+    def _set_labels_from_state(self, statenum):
+        """ statenum is a state from 1...N """
+        self._reset_labels()
+        max_states = len(self.states) - 1
+        next_statenum = statenum + 1
+        if next_statenum > max_states:
+            text = "finished"
+        else:
+            text = f'{self.states[next_statenum][0]} {self.states[next_statenum][1]} s'
+        if statenum % 2 == 1:
+            self.label_todo_states[0].bold = True
+            self.label_todo_states[0].color = (0, 1, 0)
+            self.label_todo_states[1].text = text
+        else:
+            self.label_todo_states[1].bold = True
+            self.label_todo_states[1].color = (0, 1, 0)
+            self.label_todo_states[0].text = text
 
     def on_startstop_press(self, _instance):
         running = self.clock.start_stop_clock()
