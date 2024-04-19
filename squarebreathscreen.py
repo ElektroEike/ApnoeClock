@@ -123,7 +123,6 @@ class SquareBreathScreen(Screen):
             self.label_todo_states[i].bold = False
             self.label_todo_states[i].color = (1, 1, 1)
 
-
     def _prepare(self):
         """ for next start """
         self.current_state_num = -2
