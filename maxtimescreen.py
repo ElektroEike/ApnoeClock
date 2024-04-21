@@ -6,8 +6,10 @@ from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 import math
 import sqlite3
+import dbtools
 from datetime import date
 
+# FIXME: max_breathholding_of_all_the_time needs visual appearance!
 
 class MaxTimeScreen(Screen):
     def __init__(self, parentname, **kwargs):
@@ -86,21 +88,5 @@ class MaxTimeScreen(Screen):
         """Insert the today's max breathholding time into database
             10 s is the absolute minimum, we would accept. """
         if not self.clock_is_running and self.elapsed_time > 10:
-            today_date = date.today()
-            today = f'{today_date.year}-{today_date.month}-{today_date.day}'
             time = math.trunc(self.elapsed_time)
-            connection = sqlite3.connect("apnoeclock.db")
-            cursor = connection.cursor()
-            # did we run today?
-            cursor.execute(f"SELECT COUNT(*), time FROM maxtime WHERE date='{today}'")
-            row = cursor.fetchone()
-            run_today, todays_time = row[0] > 0, row[1]
-            if run_today:
-                # we were running today, so we write the maximum into database
-                time = max(todays_time, time)
-                insert_stmt = f"UPDATE maxtime SET time='{time}' WHERE date='{today}'"
-            else:
-                insert_stmt = f"INSERT INTO maxtime VALUES('{today}', '{time}')"
-            cursor.execute(insert_stmt)
-            connection.commit()
-            connection.close()
+            dbtools.insert_maxtime_today(time)

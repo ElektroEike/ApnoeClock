@@ -5,6 +5,14 @@ tables:
 =======
 * CREATE TABLE IF NOT EXISTS
     maxtime(date DATE, time UNSIGNED INT, PRIMARY KEY(date))
+
+- each try, a max value is stored. If user makes more attempts, than just the max is stored.
+
+* CREATE TABLE IF NOT EXISTS trainingdays(date DATE,
+        tmaxtime UNSIGNED INT, tco2table UNSIGNED INT, to2table UNSIGNED INT,
+        PRIMARY KEY(date))
+- saves a trainingrecord: for every day (with training), the value 0/1 is stored in the relevant column.
+
 """
 
 import sqlite3
@@ -64,6 +72,39 @@ def does_table_exists(tablename):
     return (True, len(list))
 
 
+def init_tables():
+    """ create table maxtime and populate it with at least one element """
+    sql1 = "CREATE TABLE IF NOT EXISTS maxtime(date DATE, time UNSIGNED INT, PRIMARY KEY(date))"
+    sql2 = "SELECT COUNT(*) FROM maxtime"
+    sql3 = "INSERT INTO maxtime VALUES('2000-01-02', '10')"
+    sql4 = """CREATE TABLE IF NOT EXISTS trainingdays(date DATE, 
+        tmaxtime UNSIGNED INT, tco2table UNSIGNED INT, to2table UNSIGNED INT, 
+        PRIMARY KEY(date))"""
+    connection = sqlite3.connect("apnoeclock.db")
+    cursor = connection.cursor()
+    cursor.execute(sql1)
+    cursor.execute(sql2)
+    row = cursor.fetchone()
+    if row[0] == 0:
+        # insert a record
+        cursor.execute(sql3)
+    cursor.execute(sql4)
+    connection.commit()
+    connection.close()
+
+
+def drop_tables():
+    """ Drops all tables created for AbnoeClock. Just for testing purpose """
+    sql1 = "DROP TABLE maxtime"
+    sql2 = "DROP TABLE trainingdays"
+    connection = sqlite3.connect("apnoeclock.db")
+    cursor = connection.cursor()
+    cursor.execute(sql1)
+    cursor.execute(sql2)
+    connection.commit()
+    connection.close()
+
+
 def list_maxtimes():
     """ output table 'maxtime' """
     connection = sqlite3.connect("apnoeclock.db")
@@ -72,6 +113,25 @@ def list_maxtimes():
         print(row)
     connection.close()
 
+
+def insert_maxtime_today(time_in_seconds):
+    today = current_date()
+    today_string = format_date(today)
+    connection = sqlite3.connect("apnoeclock.db")
+    cursor = connection.cursor()
+    # did we run today?
+    cursor.execute(f"SELECT COUNT(*), time FROM maxtime WHERE date='{today_string}'")
+    row = cursor.fetchone()
+    run_today, todays_time = row[0] > 0, row[1]
+    if run_today:
+        # we were running today, so we write the maximum into database
+        time = max(todays_time, time_in_seconds)
+        insert_stmt = f"UPDATE maxtime SET time='{time}' WHERE date='{today_string}'"
+    else:
+        insert_stmt = f"INSERT INTO maxtime VALUES('{today_string}', '{time_in_seconds}')"
+    cursor.execute(insert_stmt)
+    connection.commit()
+    connection.close()
 
 def insert_maxtime_values():
     """ insert some values for the last 100 days
