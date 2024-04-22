@@ -16,6 +16,7 @@ tables:
 
 import sqlite3
 from datetime import date, timedelta
+import calendar
 from enum import Enum
 
 
@@ -25,6 +26,14 @@ class Exercise(Enum):
     SquareBreath = 2
     Co2Table = 3
     O2Table = 4
+
+
+def number_of_days_this_month():
+    today_date = date.today()
+    days_of_month = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
+    if calendar.isleap(today_date.year):
+        days_of_month[2] = 29
+    return days_of_month[today_date.month]
 
 
 def current_date():
@@ -38,7 +47,7 @@ def format_date(a_date):
     return f'{a_date.year}-{a_date.month:02d}-{a_date.day:02d}'
 
 
-def date_from_string(datestr:str):
+def date_from_string(datestr: str):
     """ create a new date object from a string like 2022-01-17"""
     dlist = datestr.split('-')
     d = date(int(dlist[0]), int(dlist[1]), int(dlist[2]))
@@ -74,7 +83,7 @@ def does_table_exists(tablename):
     if len(names_list) == 0:
         connection.close()
         return False, 0
-    result = cursor.execute(f'SELECT * FROM \'{tablename}\'' )
+    result = cursor.execute(f"SELECT * FROM '{tablename}'")
     content_list = result.fetchall()
     connection.close()
     return True, len(content_list)
@@ -193,7 +202,7 @@ def get_last_n_days_from_maxtime_as_plot(n):
     return points
 
 
-def insert_training(whichone : Exercise):
+def insert_training(whichone: Exercise):
     """ today, we have done our exercises. Insert in database.
     Each field gets a "1", if we have done the specific exercise. """
     today = current_date()
@@ -213,14 +222,40 @@ def insert_training(whichone : Exercise):
         squa = 1 if whichone == Exercise.SquareBreath else traininglist[2]
         co2t = 1 if whichone == Exercise.Co2Table else traininglist[3]
         o2ta = 1 if whichone == Exercise.O2Table else traininglist[4]
-        sql2 = f"UPDATE trainingdays SET tmaxtime={maxt}, tsquarebreath={squa}, tco2table={co2t}, to2table={o2ta} WHERE date='{today}'"
+        sql2 = f"""UPDATE trainingdays SET 
+        tmaxtime={maxt}, tsquarebreath={squa}, tco2table={co2t}, to2table={o2ta} WHERE date='{today}'"""
     cursor.execute(sql2)
     connection.commit()
     connection.close()
 
 
+def get_trainingsrecord_this_month():
+    """ for each day of this month, we sum up a record of
+        {day1: sum_trainings, day2: sum_trainings, ...} """
+    today_date = date.today()
+    like_part = f"{today_date.year}-{today_date.month:02d}-%"
+    sql1 = f"SELECT date, tmaxtime, tsquarebreath, tco2table, to2table FROM trainingdays WHERE date LIKE '{like_part}'"
+    trainingsrecord = {}
+    num_days = number_of_days_this_month()
+    # init dict of trainingsrecords
+    for i in range(1, 32):
+        trainingsrecord[i] = -1 if i > num_days else 0
+    connection = sqlite3.connect("apnoeclock.db")
+    cursor = connection.cursor()
+    result = cursor.execute(sql1)
+    db_list = result.fetchall()
+    connection.close()
+    for d, maxt, square, co2t, o2tab in db_list:
+        sum_training = maxt + square + co2t + o2tab
+        parts = d.split('-')
+        day = int(parts[2])
+        trainingsrecord[day] = sum_training
+    return trainingsrecord
+
+
 if __name__ == '__main__':
-    #drop_tables()
+    # drop_tables()
     # init_tables()
     list_trainingdays()
+    get_trainingsrecord_this_month()
 
