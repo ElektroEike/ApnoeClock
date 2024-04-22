@@ -18,6 +18,7 @@ import sqlite3
 from datetime import date, timedelta
 import calendar
 from enum import Enum
+import random
 
 
 # Fields in trainingdays table
@@ -170,18 +171,6 @@ def insert_maxtime_today(time_in_seconds):
     connection.close()
 
 
-def insert_maxtime_values():
-    """ insert some values for the last 100 days
-        This function is just for testing stuff - just to have some data in the db """
-    connection = sqlite3.connect("apnoeclock.db")
-    cursor = connection.cursor()
-    for i in range(100, 0, -1):
-        v = (current_minus_days(i), 120 - i)
-        cursor.execute("INSERT INTO maxtime VALUES(?, ?)", v)
-    connection.commit()
-    connection.close()
-
-
 def get_last_n_days_from_maxtime_as_plot(n):
     """ get the data from the last n days until today from 'maxtime'
         data becomes transformed, so that we can use it for a plot (x, y)
@@ -252,10 +241,39 @@ def get_trainingsrecord_this_month():
         trainingsrecord[day] = sum_training
     return trainingsrecord
 
+def atest_insert_maxtime_values():
+    """ insert some values for the last 100 days
+        This function is just for testing stuff - just to have some data in the db """
+    connection = sqlite3.connect("apnoeclock.db")
+    cursor = connection.cursor()
+    for i in range(100, 0, -1):
+        v = (current_minus_days(i), 120 - i)
+        cursor.execute("INSERT INTO maxtime VALUES(?, ?)", v)
+    connection.commit()
+    connection.close()
+
+def atest_insert_trainings_values():
+    """ insert some values for the last 100 days
+            This function is just for testing stuff - just to have some data in the db """
+    today_date = date.today()
+
+    connection = sqlite3.connect("apnoeclock.db")
+    cursor = connection.cursor()
+    for i in range(1, 32):
+        date_str = f"'{today_date.year}-{today_date.month:02d}-{i}'"
+        a = random.choice((0, 1))
+        b = random.choice((0, 1))
+        c = random.choice((0, 1))
+        d = random.choice((0, 1))
+        sql = f"INSERT INTO trainingdays VALUES({date_str}, {a}, {b}, {c}, {d})"
+        cursor.execute(sql)
+    connection.commit()
+    connection.close()
+
 
 if __name__ == '__main__':
     # drop_tables()
     # init_tables()
-    list_trainingdays()
+    # atest_insert_trainings_values()
+    # list_trainingdays()
     get_trainingsrecord_this_month()
-
