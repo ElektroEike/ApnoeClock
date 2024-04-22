@@ -131,6 +131,17 @@ def list_trainingdays():
     connection.close()
 
 
+def get_maximum_breathholding_time():
+    """ return the maximum breathholding time of all the time """
+    connection = sqlite3.connect("apnoeclock.db")
+    cursor = connection.cursor()
+    cursor.execute("SELECT MAX(time) FROM maxtime")
+    connection.commit()
+    row = cursor.fetchone()
+    connection.close()
+    return row[0]
+
+
 def insert_maxtime_today(time_in_seconds):
     today = current_date()
     connection = sqlite3.connect("apnoeclock.db")

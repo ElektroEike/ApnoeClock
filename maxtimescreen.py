@@ -9,8 +9,6 @@ import sqlite3
 import dbtools
 from datetime import date
 
-# FIXME: max_breathholding_of_all_the_time needs visual appearance!
-
 class MaxTimeScreen(Screen):
     def __init__(self, parentname, **kwargs):
         super(MaxTimeScreen, self).__init__(**kwargs)
@@ -36,27 +34,36 @@ class MaxTimeScreen(Screen):
         self.elapsed_time = 0
         self.action_button.text = "Start"
         self.timer_label.text = "00:00"
-        self._db_get_maxtime()
+        self.timer_label.color = [1, 1, 1, 1]
+        self.max_breathholding_of_all_the_time = dbtools.get_maximum_breathholding_time()
 
     def on_leave(self, *args):
         if self.clock_is_running:
             self.clock.cancel()
         self.clock_is_running = False
+        self.timer_label.color = [1, 1, 1, 1]
 
     def on_actionbutton_press(self, _instance):
         if self.clock_is_running:
             self.clock.cancel()
             self.clock_is_running = False
             self.action_button.text = "Start"
-            self._db_insert_maxtime()
+            # Insert the today's max breathholding time into database
+            # 10 s is the absolute minimum, we would accept. """
+            if self.elapsed_time > 10:
+                time = math.trunc(self.elapsed_time)
+                dbtools.insert_maxtime_today(time)
         else:
             self.elapsed_time = 0
+            self.timer_label.color = [1, 1, 1, 1]
             self.clock = Clock.schedule_interval(self.clock_callback, 0.1)
             self.clock_is_running = True
             self.action_button.text = "Stop"
 
     def clock_callback(self, tick):
         self.elapsed_time += tick
+        if self.elapsed_time > self.max_breathholding_of_all_the_time:
+            self.timer_label.color = [0, 1, 0, 1]
         time = math.trunc(self.elapsed_time)
         minutes = time // 60
         seconds = time % 60
@@ -73,20 +80,3 @@ class MaxTimeScreen(Screen):
         with self.layout.canvas.before:
             Color(0.5, 0.5, 0.5)
             Rectangle(pos=self.layout.pos, size=self.layout.size)
-
-    def _db_get_maxtime(self):
-        """ return the maximum breathholding time of all the times """
-        connection = sqlite3.connect("apnoeclock.db")
-        cursor = connection.cursor()
-        cursor.execute("SELECT MAX(time) FROM maxtime")
-        connection.commit()
-        row = cursor.fetchone()
-        connection.close()
-        self.max_breathholding_of_all_the_time = row[0]
-
-    def _db_insert_maxtime(self):
-        """Insert the today's max breathholding time into database
-            10 s is the absolute minimum, we would accept. """
-        if not self.clock_is_running and self.elapsed_time > 10:
-            time = math.trunc(self.elapsed_time)
-            dbtools.insert_maxtime_today(time)

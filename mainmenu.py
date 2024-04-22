@@ -10,6 +10,7 @@ from squarebreathscreen import SquareBreathScreen
 from co2tablescreen import Co2TableScreen
 import dbtools
 
+
 class MenuScreen(Screen):
     def __init__(self, **kwargs):
         super(MenuScreen, self).__init__(**kwargs)
