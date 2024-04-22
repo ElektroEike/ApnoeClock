@@ -1,6 +1,6 @@
 from kivy.uix.button import Button
 from kivy.uix.label import Label
-from kivy.graphics import Ellipse, Color, Line, Rectangle
+from kivy.graphics import Color, Line, Rectangle
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen
 

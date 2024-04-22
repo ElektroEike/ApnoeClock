@@ -4,8 +4,7 @@ database is apnoeclock.db
 tables:
 =======
 * CREATE TABLE IF NOT EXISTS
-    maxtime(date DATE, time UNSIGNED INT, PRIMARY KEY(date))
-
+        maxtime(date DATE, time UNSIGNED INT, PRIMARY KEY(date))
 - each try, a max value is stored. If user makes more attempts, than just the max is stored.
 
 * CREATE TABLE IF NOT EXISTS trainingdays(date DATE,
