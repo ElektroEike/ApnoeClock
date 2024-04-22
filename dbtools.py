@@ -17,6 +17,14 @@ tables:
 
 import sqlite3
 from datetime import date, timedelta
+from enum import Enum
+
+
+# Fields in trainingdays table
+class Exercise(Enum):
+    MaxTime = 1
+    Co2Table = 2
+    O2Table = 3
 
 
 def current_date():
@@ -62,14 +70,14 @@ def does_table_exists(tablename):
     connection = sqlite3.connect("apnoeclock.db")
     cursor = connection.cursor()
     result = cursor.execute(sql)
-    list = result.fetchall()
-    if len(list) == 0:
+    names_list = result.fetchall()
+    if len(names_list) == 0:
         connection.close()
-        return (False, 0)
+        return False, 0
     result = cursor.execute(f'SELECT * FROM \'{tablename}\'' )
-    list = result.fetchall()
+    content_list = result.fetchall()
     connection.close()
-    return (True, len(list))
+    return True, len(content_list)
 
 
 def init_tables():
@@ -95,8 +103,8 @@ def init_tables():
 
 def drop_tables():
     """ Drops all tables created for AbnoeClock. Just for testing purpose """
-    sql1 = "DROP TABLE maxtime"
-    sql2 = "DROP TABLE trainingdays"
+    sql1 = "DROP TABLE IF EXISTS maxtime"
+    sql2 = "DROP TABLE IF EXISTS trainingdays"
     connection = sqlite3.connect("apnoeclock.db")
     cursor = connection.cursor()
     cursor.execute(sql1)
@@ -114,24 +122,33 @@ def list_maxtimes():
     connection.close()
 
 
+def list_trainingdays():
+    """ output table 'trainingdays' """
+    connection = sqlite3.connect("apnoeclock.db")
+    cursor = connection.cursor()
+    for row in cursor.execute("SELECT * FROM trainingdays"):
+        print(row)
+    connection.close()
+
+
 def insert_maxtime_today(time_in_seconds):
     today = current_date()
-    today_string = format_date(today)
     connection = sqlite3.connect("apnoeclock.db")
     cursor = connection.cursor()
     # did we run today?
-    cursor.execute(f"SELECT COUNT(*), time FROM maxtime WHERE date='{today_string}'")
+    cursor.execute(f"SELECT COUNT(*), time FROM maxtime WHERE date='{today}'")
     row = cursor.fetchone()
     run_today, todays_time = row[0] > 0, row[1]
     if run_today:
         # we were running today, so we write the maximum into database
         time = max(todays_time, time_in_seconds)
-        insert_stmt = f"UPDATE maxtime SET time='{time}' WHERE date='{today_string}'"
+        insert_stmt = f"UPDATE maxtime SET time='{time}' WHERE date='{today}'"
     else:
-        insert_stmt = f"INSERT INTO maxtime VALUES('{today_string}', '{time_in_seconds}')"
+        insert_stmt = f"INSERT INTO maxtime VALUES('{today}', '{time_in_seconds}')"
     cursor.execute(insert_stmt)
     connection.commit()
     connection.close()
+
 
 def insert_maxtime_values():
     """ insert some values for the last 100 days
@@ -150,14 +167,14 @@ def get_last_n_days_from_maxtime_as_plot(n):
         data becomes transformed, so that we can use it for a plot (x, y)
     """
     day_back = current_minus_days(n)
-    day_back_date = date_from_string(day_back)      # same as a date object
+    day_back_date = date_from_string(day_back)      # same but as a date object
     connection = sqlite3.connect("apnoeclock.db")
     cursor = connection.cursor()
     sql = f'SELECT date, time FROM maxtime WHERE date >= \'{day_back}\''
     result = cursor.execute(sql)
-    list = result.fetchall()
+    maxtime_list = result.fetchall()
     points = []
-    for (d, t) in list:                             # get (date, time) list
+    for (d, t) in maxtime_list:                     # get (date, time) list
         d_date = date_from_string(d)                # as date object
         days = (d_date - day_back_date).days        # get the difference as days
         points.append((days, t))                    # coordinates
@@ -165,5 +182,31 @@ def get_last_n_days_from_maxtime_as_plot(n):
     return points
 
 
+def insert_training(whichone : Exercise):
+    """ today, we have done our exercises. Insert in database.
+    Each field gets a "1", if we have done the specific exercise. """
+    today = current_date()
+    sql1 = f"SELECT date, tmaxtime, tco2table, to2table FROM trainingdays WHERE date = '{today}'"
+    connection = sqlite3.connect("apnoeclock.db")
+    cursor = connection.cursor()
+    result = cursor.execute(sql1)
+    traininglist = result.fetchone()
+    if traininglist is None:
+        maxt = 1 if whichone == Exercise.MaxTime else 0
+        co2t = 1 if whichone == Exercise.Co2Table else 0
+        o2ta = 1 if whichone == Exercise.O2Table else 0
+        sql2 = f"INSERT INTO trainingdays VALUES('{today}', {maxt}, {co2t}, {o2ta})"
+    else:
+        maxt = 1 if whichone == Exercise.MaxTime else traininglist[1]
+        co2t = 1 if whichone == Exercise.Co2Table else traininglist[2]
+        o2ta = 1 if whichone == Exercise.O2Table else traininglist[3]
+        sql2 = f"UPDATE trainingdays SET tmaxtime={maxt}, tco2table={co2t}, to2table={o2ta} WHERE date='{today}'"
+    cursor.execute(sql2)
+    connection.commit()
+    connection.close()
+
+
 if __name__ == '__main__':
-    print(does_table_exists('maxtime'))
+    drop_tables()
+    init_tables()
+
