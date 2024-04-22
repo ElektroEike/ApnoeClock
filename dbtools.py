@@ -152,6 +152,17 @@ def get_maximum_breathholding_time():
     return row[0]
 
 
+def get_minmax_breathholding_time():
+    """ return the maximum breathholding time of all the time """
+    connection = sqlite3.connect("apnoeclock.db")
+    cursor = connection.cursor()
+    cursor.execute("SELECT MIN(time), MAX(time) FROM maxtime")
+    connection.commit()
+    row = cursor.fetchone()
+    connection.close()
+    return row[0], row[1]
+
+
 def insert_maxtime_today(time_in_seconds):
     today = current_date()
     connection = sqlite3.connect("apnoeclock.db")
@@ -247,7 +258,7 @@ def atest_insert_maxtime_values():
     connection = sqlite3.connect("apnoeclock.db")
     cursor = connection.cursor()
     for i in range(100, 0, -1):
-        v = (current_minus_days(i), 120 - i)
+        v = (current_minus_days(i), random.randint(10, 300))
         cursor.execute("INSERT INTO maxtime VALUES(?, ?)", v)
     connection.commit()
     connection.close()
@@ -272,8 +283,8 @@ def atest_insert_trainings_values():
 
 
 if __name__ == '__main__':
-    # drop_tables()
-    # init_tables()
-    # atest_insert_trainings_values()
-    # list_trainingdays()
-    get_trainingsrecord_this_month()
+    #drop_tables()
+    #init_tables()
+    #atest_insert_trainings_values()
+    #atest_insert_maxtime_values()
+    print(get_minmax_breathholding_time())
