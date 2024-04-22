@@ -10,6 +10,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen
 from kivy.clock import Clock
 from stateclock import StateClock
+import dbtools
 
 
 class Co2TableScreen(Screen):
@@ -69,7 +70,7 @@ class Co2TableScreen(Screen):
                 Color(0.6, 0.6, 0.6)
                 self.labelrects.append(Rectangle())
 
-        self.current_state_num = -2     # we start after preparation
+        self.current_state_num = -2                     # we start after preparation
 
         self.bind(pos=self.update_rect)
         self.bind(size=self.update_rect)
@@ -101,6 +102,8 @@ class Co2TableScreen(Screen):
             # finished -> draw the last Elipse
             self.colors[self.current_state_num//2].rgb = [0, 1, 0]
             self.label_todo.text = "Congratulation"
+            # write a trainingsrecord
+            dbtools.insert_training(dbtools.Exercise.Co2Table)
             Clock.schedule_once(self._prepare, 1)
 
     def _reset_color(self):
@@ -114,12 +117,12 @@ class Co2TableScreen(Screen):
 
     def _prepare(self, _dt=None):
         """ prepare for next start """
+        self.current_state_num = -2
         self.action_button.text = "Start"
         self._reset_color()
         self._reset_labels()
         self.label_todo_states[0].text = f'{self.states[1][0]} {self.states[1][1]} s'
         self.label_todo_states[1].text = f'{self.states[2][0]} {self.states[2][1]} s'
-        self.current_state_num = -2
         self.clock.init()
 
     def _set_labels_from_state(self, statenum):

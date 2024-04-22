@@ -3,6 +3,8 @@ from kivy.uix.label import Label
 from kivy.graphics import Ellipse, Color, Line, Rectangle
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen
+
+import dbtools
 from stateclock import StateClock
 
 
@@ -73,7 +75,8 @@ class SquareBreathScreen(Screen):
                 Color(0.6, 0.6, 0.6)
                 self.labelrects.append(Rectangle())
 
-        self.current_state_num = -2     # start after preparation
+        self.current_state_num = -2                     # start after preparation
+        self.we_can_write_a_trainingsrecord = False     # only _after_ exercise!
 
         self.bind(pos=self.update_rect)
         self.bind(size=self.update_rect)
@@ -94,6 +97,9 @@ class SquareBreathScreen(Screen):
         if reason == StateClock.NEW_STATE:
             self.current_state_num = self.current_state_num + 1
             if self.current_state_num >= 0:
+                if self.current_state_num == 4:     # this must go _before_ the modulo op
+                    # allow a trainingsrecord after one turn
+                    self.we_can_write_a_trainingsrecord = True
                 self.current_state_num = self.current_state_num % 4
                 self._set_color_from_state(self.current_state_num)
                 self._set_lines_from_state(self.current_state_num, time/duration)
@@ -126,6 +132,7 @@ class SquareBreathScreen(Screen):
     def _prepare(self):
         """ for next start """
         self.current_state_num = -2
+        self.we_can_write_a_trainingsrecord = False
         self._reset_lines()
         self._reset_color()
         self._reset_labels()
@@ -161,6 +168,9 @@ class SquareBreathScreen(Screen):
             self.action_button.text = "Stop"
         else:
             # if we stop, we reset everything just in case user wants to start again
+            # write a trainingsrecord
+            if self.we_can_write_a_trainingsrecord:
+                dbtools.insert_training(dbtools.Exercise.SquareBreath)
             self._prepare()
 
     def on_backbutton_press(self, _instance):
@@ -184,5 +194,5 @@ class SquareBreathScreen(Screen):
             x = self.label_todo_states[i].x
             y = self.label_todo_states[i].y
             size = self.label_todo_states[i].size
-            self.labelrects[i].pos =(x, y)
-            self.labelrects[i].size=size
+            self.labelrects[i].pos = (x, y)
+            self.labelrects[i].size = size

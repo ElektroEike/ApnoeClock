@@ -9,7 +9,7 @@ tables:
 - each try, a max value is stored. If user makes more attempts, than just the max is stored.
 
 * CREATE TABLE IF NOT EXISTS trainingdays(date DATE,
-        tmaxtime UNSIGNED INT, tco2table UNSIGNED INT, to2table UNSIGNED INT,
+        tmaxtime UNSIGNED INT, tsquarebreath UNSIGNED INTEGER, tco2table UNSIGNED INT, to2table UNSIGNED INT,
         PRIMARY KEY(date))
 - saves a trainingrecord: for every day (with training), the value 0/1 is stored in the relevant column.
 
@@ -23,8 +23,9 @@ from enum import Enum
 # Fields in trainingdays table
 class Exercise(Enum):
     MaxTime = 1
-    Co2Table = 2
-    O2Table = 3
+    SquareBreath = 2
+    Co2Table = 3
+    O2Table = 4
 
 
 def current_date():
@@ -85,8 +86,8 @@ def init_tables():
     sql1 = "CREATE TABLE IF NOT EXISTS maxtime(date DATE, time UNSIGNED INT, PRIMARY KEY(date))"
     sql2 = "SELECT COUNT(*) FROM maxtime"
     sql3 = "INSERT INTO maxtime VALUES('2000-01-02', '10')"
-    sql4 = """CREATE TABLE IF NOT EXISTS trainingdays(date DATE, 
-        tmaxtime UNSIGNED INT, tco2table UNSIGNED INT, to2table UNSIGNED INT, 
+    sql4 = """CREATE TABLE IF NOT EXISTS trainingdays(date DATE,
+        tmaxtime UNSIGNED INT, tsquarebreath UNSIGNED INTEGER, tco2table UNSIGNED INT, to2table UNSIGNED INT,
         PRIMARY KEY(date))"""
     connection = sqlite3.connect("apnoeclock.db")
     cursor = connection.cursor()
@@ -197,27 +198,30 @@ def insert_training(whichone : Exercise):
     """ today, we have done our exercises. Insert in database.
     Each field gets a "1", if we have done the specific exercise. """
     today = current_date()
-    sql1 = f"SELECT date, tmaxtime, tco2table, to2table FROM trainingdays WHERE date = '{today}'"
+    sql1 = f"SELECT date, tmaxtime, tsquarebreath, tco2table, to2table FROM trainingdays WHERE date = '{today}'"
     connection = sqlite3.connect("apnoeclock.db")
     cursor = connection.cursor()
     result = cursor.execute(sql1)
     traininglist = result.fetchone()
     if traininglist is None:
         maxt = 1 if whichone == Exercise.MaxTime else 0
+        squa = 1 if whichone == Exercise.SquareBreath else 0
         co2t = 1 if whichone == Exercise.Co2Table else 0
         o2ta = 1 if whichone == Exercise.O2Table else 0
-        sql2 = f"INSERT INTO trainingdays VALUES('{today}', {maxt}, {co2t}, {o2ta})"
+        sql2 = f"INSERT INTO trainingdays VALUES('{today}', {maxt}, {squa}, {co2t}, {o2ta})"
     else:
         maxt = 1 if whichone == Exercise.MaxTime else traininglist[1]
-        co2t = 1 if whichone == Exercise.Co2Table else traininglist[2]
-        o2ta = 1 if whichone == Exercise.O2Table else traininglist[3]
-        sql2 = f"UPDATE trainingdays SET tmaxtime={maxt}, tco2table={co2t}, to2table={o2ta} WHERE date='{today}'"
+        squa = 1 if whichone == Exercise.SquareBreath else traininglist[2]
+        co2t = 1 if whichone == Exercise.Co2Table else traininglist[3]
+        o2ta = 1 if whichone == Exercise.O2Table else traininglist[4]
+        sql2 = f"UPDATE trainingdays SET tmaxtime={maxt}, tsquarebreath={squa}, tco2table={co2t}, to2table={o2ta} WHERE date='{today}'"
     cursor.execute(sql2)
     connection.commit()
     connection.close()
 
 
 if __name__ == '__main__':
-    drop_tables()
-    init_tables()
+    #drop_tables()
+    # init_tables()
+    list_trainingdays()
 

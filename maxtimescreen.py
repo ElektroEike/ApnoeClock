@@ -5,9 +5,8 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 import math
-import sqlite3
 import dbtools
-from datetime import date
+
 
 class MaxTimeScreen(Screen):
     def __init__(self, parentname, **kwargs):
@@ -53,6 +52,7 @@ class MaxTimeScreen(Screen):
             if self.elapsed_time > 10:
                 time = math.trunc(self.elapsed_time)
                 dbtools.insert_maxtime_today(time)
+                dbtools.insert_training(dbtools.Exercise.MaxTime)
         else:
             self.elapsed_time = 0
             self.timer_label.color = [1, 1, 1, 1]
