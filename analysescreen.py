@@ -19,10 +19,14 @@ class AnalyseScreen(Screen):
                                       on_press=self.on_backbutton_press))
         # Graph
         with self.canvas:
+            Color(0.6, 0.6, 0.6)
+            self.plot_milestoneline = Line(width=1)
             Color(1, 1, 0, 1)
             self.graph = Line(width=2, point=(10, 10, 100, 200))
+
         self.graphpoints = dbtools.get_last_n_days_from_maxtime_as_plot(100)
         self.graph_minmax = dbtools.get_minmax_breathholding_time()
+        self.plot_milestone_value = 150
 
         # Trainingsrecords in a calendar view
         self.date_colors = []
@@ -54,36 +58,45 @@ class AnalyseScreen(Screen):
         self.manager.current = self.parent_screen_name
 
     def update_rect(self, *_args):
-        # background
-        with self.layout.canvas.before:
-            Color(0.5, 0.5, 0.5)
-            Rectangle(pos=self.layout.pos, size=self.layout.size)
-
         width, height = self.size
-        # Progress Plot
         plot_x = 10
         plot_y = height / 3
         plot_width = width - 20
         plot_height = height / 2
+        cal_x = plot_x
+        cal_y = cal_x
+        cal_width = plot_width
+        cal_height = height / 3 - 2 * cal_y
+        # background
         with self.layout.canvas.before:
+            Color(0.5, 0.5, 0.5)
+            Rectangle(pos=self.layout.pos, size=self.layout.size)
             Color(0.7, 0.7, 0.7, 1)
-            Rectangle(pos=(10, height / 3), size=(plot_width, plot_height))
+            Rectangle(pos=(plot_x, plot_y), size=(plot_width, plot_height))
+            Rectangle(pos=(cal_x, cal_y), size=(cal_width, cal_height))
+        # Plot
         points = []
         num_points = len(self.graphpoints)
+        scale_x = (plot_width+10) // num_points
+        maxy = max(self.graph_minmax[1], self.plot_milestone_value)
+        scale_y = plot_height // maxy
+        start_x = plot_x + 10
+        start_y = plot_y
         for d, m in self.graphpoints:
-            x = plot_width//num_points * d + plot_x + 5
-            y = plot_height // self.graph_minmax[1] * m + plot_y
+            x = scale_x * d + start_x
+            y = scale_y * m + start_y
             points.append(x)
             points.append(y)
         self.graph.points = points
+        milestone_points = [start_x, scale_y * self.plot_milestone_value + start_y,
+                            plot_width, scale_y * self.plot_milestone_value + start_y]
+        self.plot_milestoneline.points = milestone_points
 
         # Calendar
-        size = min(width, height) / 15
         for index, rect in enumerate(self.date_rects):
-            rect.size = (size, size)
+            rect.size = (cal_width//15, cal_height//11)
             col = index % 7
             row = index // 7
-            x = (2 * col + 1) * size
-            y = 7 * size - (2 * row + 1) * size * 2 / 3
+            x = (2 * col + 1) * cal_width//15 + cal_x
+            y = 10 * cal_height//11 - (2 * row + 1) * cal_height//11 + cal_y
             rect.pos = (x, y)
-
