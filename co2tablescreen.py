@@ -41,7 +41,6 @@ class Co2TableScreen(Screen):
         self.layout.add_widget(Button(text='↩', font_name='DejaVuSans', font_size="20pt",
                                       size_hint=(0.2, 0.1), pos_hint={'x': 0.01, 'y': 0.89},
                                       on_press=self.on_backbutton_press))
-
         # show, what the user has to do next
         self.label_todo_states = []
         text = f'{self.states[1][0]} {self.states[1][1]} s'
@@ -56,11 +55,12 @@ class Co2TableScreen(Screen):
         self.layout.add_widget(label_todo_state2)
         self.label_todo_states.append(label_todo_state2)
 
-        self.colors = []
+        # Ellipses showing the number of rounds
+        self.ellipse_colors = []
         self.ellipses = []
         with self.canvas:
             for i in range(0, 8):
-                self.colors.append(Color(0, 0, 1, .5, mode='rgba'))
+                self.ellipse_colors.append(Color(0.6, 0.6, 0.6))
                 self.ellipses.append(Ellipse(size=(10, 10), size_hint=(None, None)))
 
         # draw a rect arround label_todo_next
@@ -93,14 +93,14 @@ class Co2TableScreen(Screen):
                 index = self.current_state_num // 2
                 self._set_labels_from_state(self.current_state_num + 1)
                 if self.current_state_num % 2 == 0:         # apnea
-                    self.colors[index].rgb = [1, 0, 0]
+                    self.ellipse_colors[index].rgb = [1, 0, 0]
                 else:                                       # breathe
-                    self.colors[index].rgb = [0, 1, 0]
+                    self.ellipse_colors[index].rgb = [0, 1, 0]
         elif reason == StateClock.RUN_STATE:
             self.label_time.text = '{:d} s'.format(round(duration - time))
         else:
             # finished -> draw the last Elipse
-            self.colors[self.current_state_num//2].rgb = [0, 1, 0]
+            self.ellipse_colors[self.current_state_num // 2].rgb = [0, 1, 0]
             self.label_todo.text = "Congratulation"
             # write a trainingsrecord
             dbtools.insert_training(dbtools.Exercise.Co2Table)
@@ -108,7 +108,7 @@ class Co2TableScreen(Screen):
 
     def _reset_color(self):
         for i in range(0, 8):
-            self.colors[i].rgba = [0, 0, 1, 0.5]
+            self.ellipse_colors[i].rgb = [0.6, 0.6, 0.6]
 
     def _reset_labels(self):
         for i in range(0, 2):
@@ -154,10 +154,11 @@ class Co2TableScreen(Screen):
         self.manager.current = self.parent_screen_name
 
     def update_rect(self, *_args):
+        # Background
         with self.layout.canvas.before:
             Color(0.5, 0.5, 0.5)
             Rectangle(pos=self.layout.pos, size=self.layout.size)
-
+        # Ellipses - showing the round number
         width, height = self.size
         size = min(width, height) / 20
         y = 5.5 * height / 10
@@ -165,7 +166,7 @@ class Co2TableScreen(Screen):
             elipse.size = (size, size)
             x = (index + 1) * width / 9 - size / 2
             elipse.pos = (x, y)
-
+        # labels todo
         for i in range(0, 2):
             x = self.label_todo_states[i].x
             y = self.label_todo_states[i].y

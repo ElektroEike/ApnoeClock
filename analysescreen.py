@@ -71,7 +71,7 @@ class AnalyseScreen(Screen):
         with self.layout.canvas.before:
             Color(0.5, 0.5, 0.5)
             Rectangle(pos=self.layout.pos, size=self.layout.size)
-            Color(0.7, 0.7, 0.7, 1)
+            Color(0.6, 0.6, 0.6, 1)
             Rectangle(pos=(plot_x, plot_y), size=(plot_width, plot_height))
             Rectangle(pos=(cal_x, cal_y), size=(cal_width, cal_height))
         # Plot
