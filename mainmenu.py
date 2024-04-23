@@ -9,6 +9,7 @@ from maxtimescreen import MaxTimeScreen
 from squarebreathscreen import SquareBreathScreen
 from co2tablescreen import Co2TableScreen
 from analysescreen import AnalyseScreen
+from settingsscreen import SettingsScreen
 import dbtools
 
 
@@ -22,7 +23,7 @@ class MenuScreen(Screen):
         layout.add_widget(Button(text="CO_2-Tabelle", font_size="14pt", on_press=self.on_co2table_press))
         layout.add_widget(Button(text="O_2-Tabelle", font_size="14pt", ))
         layout.add_widget(Button(text="Auswertung", font_size="14pt", on_press=self.on_analyse_press))
-        layout.add_widget(Button(text="Einstellung", font_size="14pt", ))
+        layout.add_widget(Button(text="Einstellung", font_size="14pt", on_press=self.on_settings_press))
         layout.add_widget(Button(text="About", font_size="14pt", ))
         self.bind(size=self.update_rect)
 
@@ -43,6 +44,9 @@ class MenuScreen(Screen):
     def on_analyse_press(self, _instance):
         self.manager.current = "AnalyseScreen"
 
+    def on_settings_press(self, _instance):
+        self.manager.current = "SettingsScreen"
+
 
 class ApnoeClockApp(App):
     def build(self):
@@ -53,6 +57,7 @@ class ApnoeClockApp(App):
         manager.add_widget(SquareBreathScreen("MenuScreen", name="SquareBreathScreen"))
         manager.add_widget(Co2TableScreen("MenuScreen", name="Co2TableScreen"))
         manager.add_widget(AnalyseScreen("MenuScreen", name="AnalyseScreen"))
+        manager.add_widget(SettingsScreen("MenuScreen", name="SettingsScreen"))
         manager.current = "MenuScreen"
         return manager
 

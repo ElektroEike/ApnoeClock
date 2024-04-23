@@ -93,7 +93,7 @@ class AnalyseScreen(Screen):
         self.plot_milestoneline.points = milestone_points
 
         # Calendar
-        cal_size_w, cal_size_h = cal_width // 15, cal_height // 11     # stupid names!
+        cal_size_w, cal_size_h = cal_width // 15, cal_height // 11
         for index, rect in enumerate(self.date_rects):
             rect.size = (cal_size_w, cal_size_h)
             col = index % 7
