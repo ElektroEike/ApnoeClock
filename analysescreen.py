@@ -19,7 +19,7 @@ class AnalyseScreen(Screen):
                                       on_press=self.on_backbutton_press))
         # Graph
         with self.canvas:
-            Color(0.6, 0.6, 0.6)
+            Color(0.1, 0.8, 0.1)
             self.plot_milestoneline = Line(width=1)
             Color(1, 1, 0, 1)
             self.graph = Line(width=2, point=(10, 10, 100, 200))
@@ -78,8 +78,8 @@ class AnalyseScreen(Screen):
         points = []
         num_points = len(self.graphpoints)
         scale_x = (plot_width+10) // num_points
-        maxy = max(self.graph_minmax[1], self.plot_milestone_value)
-        scale_y = plot_height // maxy
+        maxy = max(self.graph_minmax[1], self.plot_milestone_value) + 20
+        scale_y = plot_height / maxy
         start_x = plot_x + 10
         start_y = plot_y
         for d, m in self.graphpoints:
@@ -93,10 +93,11 @@ class AnalyseScreen(Screen):
         self.plot_milestoneline.points = milestone_points
 
         # Calendar
+        cal_size_w, cal_size_h = cal_width // 15, cal_height // 11     # stupid names!
         for index, rect in enumerate(self.date_rects):
-            rect.size = (cal_width//15, cal_height//11)
+            rect.size = (cal_size_w, cal_size_h)
             col = index % 7
             row = index // 7
-            x = (2 * col + 1) * cal_width//15 + cal_x
-            y = 10 * cal_height//11 - (2 * row + 1) * cal_height//11 + cal_y
+            x = (2 * col + 1) * cal_size_w + cal_x
+            y = 10 * cal_size_h - (2 * row + 1) * cal_size_h + cal_y
             rect.pos = (x, y)
