@@ -1,5 +1,27 @@
 """ Settingsscreen is a module for ApneaClock - a timer application for apnea divers
 
+    The configuration elements
+    ==========================
+    key : value
+    'maxtime_prepare_time':
+        0 (Default): no preparation at all. User prepares self, then starts by pressing start
+        1: 1 minute prepare time, then we start
+    'squarebreath_prepare_time':
+        0 (Default): 10 seconds prepare time
+        1: 1 minute prepare time, then the exercise starts
+    'squarebreath_inhale_time':
+        [value] (10 seconds is default): time to inhale and time to hold. time to exhale is 2 * value.
+    'co2table_prepare_time':
+        0 (Default): 10 seconds prepare time
+        1: 1 minute prepare time
+    'co2table_use_maxtime':
+        0 (Default): use 'co2table_hold_time' to define the breath hold time.
+        1: use 40% up to 50% of the maximum breathholding time as the hold time.
+    co2table_hold_time:
+        [value] (30 seconds is default): the breath holding time, if you select co2table_use_maxtime=0
+        Please note, that whatever you select, the minimum breathholding time in CO2-Table is 30 seconds
+
+    For actual default values, see get_default_config() in this file
 """
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -46,17 +68,13 @@ class TogglebuttonWithLabel(BoxLayout):
         self.set_text()
 
     def set_text(self):
-        if self.togglebutton.state == 'normal':
-            self.togglebutton.text = self.text_normal
-        else:
-            self.togglebutton.text = self.text_down
+        d = {'normal': self.text_normal, 'down': self.text_down}
+        self.togglebutton.text = d[self.togglebutton.state]
 
-    def on_toggle(self, a, v):
+    def on_toggle(self, _a, togglestate):
+        d = {'normal': 0, 'down': 1}
         self.set_text()
-        if v == 'normal':
-            dbtools.set_configvalue(self.config_item_name, 0)
-        else:
-            dbtools.set_configvalue(self.config_item_name, 1)
+        dbtools.set_configvalue(self.config_item_name, d[togglestate])
 
 
 class SettingsScreen(Screen):
