@@ -18,8 +18,8 @@ class MaxTimeScreen(Screen):
         self.prepare_user = False
         self.prepare_clock = None
         self.prepare_clock_is_running = False
-
         self.max_breathholding_of_all_the_time = 0
+        # layout
         self.layout = FloatLayout(size_hint=(1, 1))
         self.add_widget(self.layout)
         self.layout.add_widget(Label(text="Maximalversuch", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
@@ -31,7 +31,7 @@ class MaxTimeScreen(Screen):
         self.layout.add_widget(Button(text='↩', font_name='DejaVuSans', font_size="20pt",
                                       size_hint=(0.2, 0.1), pos_hint={'x': 0.01, 'y': 0.89},
                                       on_press=self.on_backbutton_press))
-
+        # background
         with self.layout.canvas.before:
             Color(0.5, 0.5, 0.5)
             self.background_rect = Rectangle(pos=self.layout.pos, size=self.layout.size)
@@ -54,10 +54,14 @@ class MaxTimeScreen(Screen):
 
     def on_leave(self, *args):
         if self.clock_is_running:
-            self._clock.cancel()
+            self._clock_cancel()
         if self.prepare_clock_is_running:
             self._prepare_clock_cancel()
         self.timer_label.color = [1, 1, 1, 1]
+
+    def _clock_start(self):
+        self.clock = Clock.schedule_interval(self.clock_callback, 0.1)
+        self.clock_is_running = True
 
     def _clock_cancel(self):
         self.clock.cancel()
@@ -68,7 +72,9 @@ class MaxTimeScreen(Screen):
         self.prepare_clock_is_running = False
 
     def on_actionbutton_press(self, _instance):
+        """ starting and stopping 2 clocks: prepare clock and normal exercise clock"""
         if self.clock_is_running:
+            # stop normal clock
             self._clock_cancel()
             self.action_button.text = "Prepare" if self.prepare_user else "Start"
             # Insert the today's max breathholding time into database
@@ -86,13 +92,12 @@ class MaxTimeScreen(Screen):
             self.action_button.text = "Stop"
             if self.prepare_user:
                 # run preparation
-                self.elapsed_time = 5      # 60 seconds preparation time
+                self.elapsed_time = 60      # 60 seconds preparation time
                 self.prepare_clock = Clock.schedule_interval(self.prepare_clock_callback, 0.1)
                 self.prepare_clock_is_running = True
             else:
                 # run normal clock
-                self.clock = Clock.schedule_interval(self.clock_callback, 0.1)
-                self.clock_is_running = True
+                self._clock_start()
 
     def clock_callback(self, tick):
         self.elapsed_time += tick
@@ -108,6 +113,7 @@ class MaxTimeScreen(Screen):
         self.timer_label.text = time_text
 
     def prepare_clock_callback(self, tick):
+        """ count from 60 to 0 """
         self.elapsed_time -= tick
         time = math.trunc(self.elapsed_time)
         time_text = f"prepare {time} s"
@@ -115,10 +121,9 @@ class MaxTimeScreen(Screen):
         if time <= 0:        # finished with preparation
             self._prepare_clock_cancel()
             self.elapsed_time = 0
-            self.timer_label.text = "00 s"
+            self.timer_label.text = "0 s"
             # run normal clock
-            self.clock = Clock.schedule_interval(self.clock_callback, 0.1)
-            self.clock_is_running = True
+            self._clock_start()
 
     def on_backbutton_press(self, _instance):
         self.manager.current = self.parent_screen_name
