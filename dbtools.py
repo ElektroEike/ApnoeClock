@@ -12,6 +12,9 @@ tables:
         PRIMARY KEY(date))
 - saves a trainingrecord: for every day (with training), the value 0/1 is stored in the relevant column.
 
+* CREATE TABLE IF NOT EXISTS config(configname varchar(32), configvalue UNSIGNED INT, PRIMARY KEY(configname))
+- Saves configvalues, description in the settingsscreen.py file
+
 """
 
 import sqlite3
@@ -98,6 +101,8 @@ def init_tables():
     sql4 = """CREATE TABLE IF NOT EXISTS trainingdays(date DATE,
         tmaxtime UNSIGNED INT, tsquarebreath UNSIGNED INTEGER, tco2table UNSIGNED INT, to2table UNSIGNED INT,
         PRIMARY KEY(date))"""
+    sql5 = """CREATE TABLE IF NOT EXISTS config(configname varchar(32), configvalue UNSIGNED INT, 
+        PRIMARY KEY(configname))"""
     connection = sqlite3.connect("apnoeclock.db")
     cursor = connection.cursor()
     cursor.execute(sql1)
@@ -107,6 +112,7 @@ def init_tables():
         # insert a record
         cursor.execute(sql3)
     cursor.execute(sql4)
+    cursor.execute(sql5)
     connection.commit()
     connection.close()
 
@@ -115,10 +121,12 @@ def drop_tables():
     """ Drops all tables created for AbnoeClock. Just for testing purpose """
     sql1 = "DROP TABLE IF EXISTS maxtime"
     sql2 = "DROP TABLE IF EXISTS trainingdays"
+    sql3 = "DROP TABLE IF EXISTS config"
     connection = sqlite3.connect("apnoeclock.db")
     cursor = connection.cursor()
     cursor.execute(sql1)
     cursor.execute(sql2)
+    cursor.execute(sql3)
     connection.commit()
     connection.close()
 
@@ -141,6 +149,15 @@ def list_trainingdays():
     connection.close()
 
 
+def list_config():
+    """ output table 'config' """
+    connection = sqlite3.connect("apnoeclock.db")
+    cursor = connection.cursor()
+    for row in cursor.execute("SELECT * FROM config"):
+        print(row)
+    connection.close()
+
+
 def get_maximum_breathholding_time():
     """ return the maximum breathholding time of all the time """
     connection = sqlite3.connect("apnoeclock.db")
@@ -153,7 +170,7 @@ def get_maximum_breathholding_time():
 
 
 def get_minmax_breathholding_time():
-    """ return the maximum breathholding time of all the time """
+    """ return the minimum and maximum breathholding time of all the time """
     connection = sqlite3.connect("apnoeclock.db")
     cursor = connection.cursor()
     cursor.execute("SELECT MIN(time), MAX(time) FROM maxtime")
@@ -252,6 +269,38 @@ def get_trainingsrecord_this_month():
         trainingsrecord[day] = sum_training
     return trainingsrecord
 
+
+def get_configvalue(configname:str):
+    """ get a specific config value """
+    sql1 = f"SELECT configvalue FROM config WHERE configname='{configname}'"
+    connection = sqlite3.connect("apnoeclock.db")
+    cursor = connection.cursor()
+    result = cursor.execute(sql1)
+    configvalue = result.fetchone()
+    connection.close()
+    if configvalue is None:
+        return (False, 0)
+    else:
+        return (True, configvalue[0])
+
+
+def set_configvalue(configname:str, configvalue:int):
+    """ get a specific config value """
+    sql1 = f"SELECT configvalue FROM config WHERE configname='{configname}'"
+    sql2 = f"INSERT INTO config VALUES('{configname}', '{configvalue}')"
+    sql3 = f"UPDATE config SET configvalue='{configvalue}' WHERE configname='{configname}'"
+    connection = sqlite3.connect("apnoeclock.db")
+    cursor = connection.cursor()
+    result = cursor.execute(sql1)
+    value = result.fetchone()
+    if value is None:
+        cursor.execute(sql2)
+    else:
+        cursor.execute(sql3)
+    connection.commit()
+    connection.close()
+
+
 def atest_insert_maxtime_values():
     """ insert some values for the last 100 days
         This function is just for testing stuff - just to have some data in the db """
@@ -262,6 +311,7 @@ def atest_insert_maxtime_values():
         cursor.execute("INSERT INTO maxtime VALUES(?, ?)", v)
     connection.commit()
     connection.close()
+
 
 def atest_insert_trainings_values():
     """ insert some values for the last 100 days
@@ -283,8 +333,8 @@ def atest_insert_trainings_values():
 
 
 if __name__ == '__main__':
-    #drop_tables()
-    #init_tables()
-    #atest_insert_trainings_values()
-    #atest_insert_maxtime_values()
-    print(get_minmax_breathholding_time())
+    # drop_tables()
+    # init_tables()
+    list_config()
+    print(get_configvalue('nonexistent'))
+    print(get_configvalue('name'))
