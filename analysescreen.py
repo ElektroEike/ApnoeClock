@@ -13,7 +13,7 @@ class AnalyseScreen(Screen):
         self.layout = FloatLayout(size_hint=(1, 1))
         self.add_widget(self.layout)
 
-        self.layout.add_widget(Label(text="Analyse", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
+        self.layout.add_widget(Label(text="Auswertung", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
         self.layout.add_widget(Button(text='↩', font_name='DejaVuSans', font_size="20pt",
                                       size_hint=(0.2, 0.1), pos_hint={'x': 0.01, 'y': 0.89},
                                       on_press=self.on_backbutton_press))

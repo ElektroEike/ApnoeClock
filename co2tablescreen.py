@@ -18,19 +18,19 @@ class Co2TableScreen(Screen):
         super(Co2TableScreen, self).__init__(**kwargs)
         self.parent_screen_name = parentname
         # 8 turns of apnea and breathing
-        self.states = {0: ("Prepare...", 3, 1),
-                       1: ("Hold Breath", 1, 2), 2: ("Breathe...", 1, 3),
-                       3: ("Hold Breath", 1, 4), 4: ("Breathe...", 2, 5),
-                       5: ("Hold Breath", 1, 6), 6: ("Breathe...", 1, 7),
-                       7: ("Hold Breath", 1, 8), 8: ("Breathe...", 1, 9),
-                       9: ("Hold Breath", 1, 10), 10: ("Breathe...", 1, 11),
-                       11: ("Hold Breath", 1, 12), 12: ("Breathe...", 1, 13),
-                       13: ("Hold Breath", 1, 14), 14: ("Breathe...", 1, 15),
-                       15: ("Hold Breath", 3, -1)}
+        self.states = {0: ("vorbereiten", 3, 1),
+                       1: ("Atem halten", 1, 2), 2: ("...atmen...", 1, 3),
+                       3: ("Atem halten", 1, 4), 4: ("...atmen...", 2, 5),
+                       5: ("Atem halten", 1, 6), 6: ("...atmen...", 1, 7),
+                       7: ("Atem halten", 1, 8), 8: ("...atmen...", 1, 9),
+                       9: ("Atem halten", 1, 10), 10: ("...atmen...", 1, 11),
+                       11: ("Atem halten", 1, 12), 12: ("...atmen...", 1, 13),
+                       13: ("Atem halten", 1, 14), 14: ("...atmen...", 1, 15),
+                       15: ("Atem halten", 3, -1)}
 
         self.layout = FloatLayout(size_hint=(1, 1))
         self.add_widget(self.layout)
-        self.layout.add_widget(Label(text="CO2 Table", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
+        self.layout.add_widget(Label(text="CO2 Tabelle", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
         self.label_todo = Label(text="ToDo", font_size="30pt", size_hint=(0.9, 0.1), pos_hint={'x': 0.05, 'y': 0.8})
         self.layout.add_widget(self.label_todo)
         self.label_time = Label(text="00:00", font_size="30pt", size_hint=(0.9, 0.1), pos_hint={'x': 0.05, 'y': 0.71})
@@ -101,7 +101,7 @@ class Co2TableScreen(Screen):
         else:
             # finished -> draw the last Elipse
             self.ellipse_colors[self.current_state_num // 2].rgb = [0, 1, 0]
-            self.label_todo.text = "Congratulation"
+            self.label_todo.text = "Glückwunsch"
             # write a trainingsrecord
             dbtools.insert_training(dbtools.Exercise.Co2Table)
             Clock.schedule_once(self._prepare, 1)

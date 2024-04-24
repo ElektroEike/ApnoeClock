@@ -24,7 +24,7 @@ class MenuScreen(Screen):
         layout.add_widget(Button(text="O_2-Tabelle", font_size="14pt", ))
         layout.add_widget(Button(text="Auswertung", font_size="14pt", on_press=self.on_analyse_press))
         layout.add_widget(Button(text="Einstellung", font_size="14pt", on_press=self.on_settings_press))
-        layout.add_widget(Button(text="About", font_size="14pt", ))
+        layout.add_widget(Button(text="Über", font_size="14pt", ))
         self.bind(size=self.update_rect)
 
     def update_rect(self, _instance, _value):
