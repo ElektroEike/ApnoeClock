@@ -77,20 +77,21 @@ class AnalyseScreen(Screen):
         # Plot
         points = []
         num_points = len(self.graphpoints)
-        scale_x = (plot_width+10) // num_points
-        maxy = max(self.graph_minmax[1], self.plot_milestone_value) + 20
-        scale_y = plot_height / maxy
-        start_x = plot_x + 10
-        start_y = plot_y
-        for d, m in self.graphpoints:
-            x = scale_x * d + start_x
-            y = scale_y * m + start_y
-            points.append(x)
-            points.append(y)
-        self.graph.points = points
-        milestone_points = [start_x, scale_y * self.plot_milestone_value + start_y,
-                            plot_width, scale_y * self.plot_milestone_value + start_y]
-        self.plot_milestoneline.points = milestone_points
+        if num_points > 0:
+            scale_x = (plot_width+10) // num_points
+            maxy = max(self.graph_minmax[1], self.plot_milestone_value) + 20
+            scale_y = plot_height / maxy
+            start_x = plot_x + 10
+            start_y = plot_y
+            for d, m in self.graphpoints:
+                x = scale_x * d + start_x
+                y = scale_y * m + start_y
+                points.append(x)
+                points.append(y)
+            self.graph.points = points
+            milestone_points = [start_x, scale_y * self.plot_milestone_value + start_y,
+                                plot_width, scale_y * self.plot_milestone_value + start_y]
+            self.plot_milestoneline.points = milestone_points
 
         # Calendar
         cal_size_w, cal_size_h = cal_width // 15, cal_height // 11
