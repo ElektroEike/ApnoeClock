@@ -22,7 +22,8 @@ class SquareBreathScreen(Screen):
 
         self.layout = FloatLayout(size_hint=(1, 1))
         self.add_widget(self.layout)
-        self.layout.add_widget(Label(text="Intervallatmung", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
+        self.layout.add_widget(Label(text="Intervallatmung", size_hint=(0.5, 0.1),
+                                     pos_hint={'center_x': 0.5, 'y': 0.9}))
         self.label_todo = Label(text="ToDo", font_size="30pt", size_hint=(0.9, 0.1), pos_hint={'x': 0.05, 'y': 0.8})
         self.layout.add_widget(self.label_todo)
         self.label_time = Label(text="00:00", font_size="30pt", size_hint=(0.9, 0.1), pos_hint={'x': 0.05, 'y': 0.72})
