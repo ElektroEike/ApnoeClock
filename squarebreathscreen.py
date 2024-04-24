@@ -84,6 +84,34 @@ class SquareBreathScreen(Screen):
         self.clock = StateClock(self.states, self.stateclock_reports)
 
     def on_enter(self, *args):
+        valid, value = dbtools.get_configvalue('squarebreath_prepare_time')
+        if valid:
+            new_preparation_time = 10 if value == 0 else 60
+            text, time, next = self.states[0]
+            self.states[0] = (text, new_preparation_time, next)
+        valid, value = dbtools.get_configvalue('squarebreath_inhale_time')
+        if valid:
+            new_inhale_time = value;
+            new_hold_time = value
+            new_exhale_time = 2 * value
+
+            text, time, next = self.states[1]
+            self.states[1] = (text, new_inhale_time, next)
+            text, time, next = self.states[2]
+            self.states[2] = (text, new_hold_time, next)
+            text, time, next = self.states[3]
+            self.states[3] = (text, new_exhale_time, next)
+            text, time, next = self.states[4]
+            self.states[4] = (text, new_hold_time, next)
+            text = f'{self.states[1][0]} {self.states[1][1]} s'
+            self.label_todo_states[0].text = text
+            text = f'{self.states[2][0]} {self.states[2][1]} s'
+            self.label_todo_states[1].text = text
+            text = f'{self.states[3][0]} {self.states[3][1]} s'
+            self.label_todo_states[2].text = text
+            text = f'{self.states[4][0]} {self.states[4][1]} s'
+            self.label_todo_states[3].text = text
+
         self._prepare()
 
     def on_leave(self, *args):

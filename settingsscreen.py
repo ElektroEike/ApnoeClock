@@ -141,7 +141,7 @@ class SettingsScreen(Screen):
         config_dict = {
             'maxtime_prepare_time': 0,          # No prepare time
             'squarebreath_prepare_time': 0,     # 0 means : 10 seconds prepare time
-            'squarebreath_inhale_time': 10,    # 10 seconds inhale, 20 seconds exhale
+            'squarebreath_inhale_time': 10,     # 10 seconds inhale, 20 seconds exhale
             'co2table_prepare_time': 0,         # 0 means: 10 seconds prepare time
             'co2table_use_maxtime': 0,          # 0: use value from co2table_hold_time, not from maximum holding time
             'co2table_hold_time': 30            # 30 is the very minimum for CO2 table
