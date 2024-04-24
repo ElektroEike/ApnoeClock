@@ -270,6 +270,22 @@ def get_trainingsrecord_this_month():
     return trainingsrecord
 
 
+def get_full_config():
+    """ get all configuration values
+        - as far as the db knows about it - as a dict """
+    sql = "SELECT configname, configvalue FROM config"
+    config_dict = {}
+    connection = sqlite3.connect("apnoeclock.db")
+    cursor = connection.cursor()
+    result = cursor.execute(sql)
+    configlist = result.fetchall()
+    for key, value in configlist:
+        config_dict[key] = value
+    connection.close()
+    return config_dict
+
+
+
 def get_configvalue(configname:str):
     """ get a specific config value """
     sql1 = f"SELECT configvalue FROM config WHERE configname='{configname}'"
@@ -317,7 +333,6 @@ def atest_insert_trainings_values():
     """ insert some values for the last 100 days
             This function is just for testing stuff - just to have some data in the db """
     today_date = date.today()
-
     connection = sqlite3.connect("apnoeclock.db")
     cursor = connection.cursor()
     for i in range(1, 32):
@@ -336,5 +351,5 @@ if __name__ == '__main__':
     # drop_tables()
     # init_tables()
     list_config()
-    print(get_configvalue('nonexistent'))
-    print(get_configvalue('name'))
+    #print(get_configvalue('nonexistent'))
+    #print(get_configvalue('name'))

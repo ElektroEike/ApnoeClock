@@ -1,3 +1,6 @@
+""" Settingsscreen is a module for ApneaClock - a timer application for apnea divers
+
+"""
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
@@ -18,15 +21,15 @@ class SliderWithLabel(BoxLayout):
         self.slider = Slider(min=min_value, max=max_value, size_hint=(0.9, 1))
         self.slider.value = current_value
         self.add_widget(self.slider)
-        self.label = Label(text="foo", size_hint=(0.1, 1))
+        self.label = Label(text=f"{current_value} s", size_hint=(0.1, 1))
         self.add_widget(self.label)
         # and now something completly different
         self.slider.bind(value=self.on_slider)
-        self.on_slider(None, self.slider.value)
 
     def on_slider(self, _a, value):
         v = int(value)
         self.label.text = f"{v} s"
+        dbtools.set_configvalue(self.config_item_name, v)
 
 
 class TogglebuttonWithLabel(BoxLayout):
@@ -50,6 +53,10 @@ class TogglebuttonWithLabel(BoxLayout):
 
     def on_toggle(self, a, v):
         self.set_text()
+        if v == 'normal':
+            dbtools.set_configvalue(self.config_item_name, 0)
+        else:
+            dbtools.set_configvalue(self.config_item_name, 1)
 
 
 class SettingsScreen(Screen):
@@ -75,34 +82,67 @@ class SettingsScreen(Screen):
             Color(0.4, 0.4, 0.4)
             self.grid_rect = Rectangle()
 
+        self.current_config = {}
+        self.init_current_config()
+
         # Config Items
         self.gridlayout.add_widget(Label(text="Maximalversuch\nVorbereitung?", size_hint_x=0.45))
-        self.gridlayout.add_widget(TogglebuttonWithLabel("maxtime_prepare_time", 0,
+        self.gridlayout.add_widget(TogglebuttonWithLabel("maxtime_prepare_time",
+                                                         self.current_config['maxtime_prepare_time'],
                                                          "Nein", "1 Minute"))
 
         self.gridlayout.add_widget(Label(text="Intervallatmung\nVorbereitungszeit", size_hint_x=0.45))
-        self.gridlayout.add_widget(TogglebuttonWithLabel("squarebreath_prepare_time", 0,
+        self.gridlayout.add_widget(TogglebuttonWithLabel("squarebreath_prepare_time",
+                                                         self.current_config['squarebreath_prepare_time'],
                                                          "10 s", "1 Minute"))
 
         self.gridlayout.add_widget(Label(text="Intervallatmung\nEinatmen:", size_hint_x=0.45))
-        self.gridlayout.add_widget(SliderWithLabel("squarebreath_inhalte_time",
-                                                   5, 15, 10))
+        self.gridlayout.add_widget(SliderWithLabel("squarebreath_inhale_time",
+                                                   5, 15,
+                                                   self.current_config['squarebreath_inhale_time']))
 
         self.gridlayout.add_widget(Label(text="CO2-Tabelle\nVorbereitungszeit", size_hint_x=0.45))
-        self.gridlayout.add_widget(TogglebuttonWithLabel("co2table_prepare_time", 0,
+        self.gridlayout.add_widget(TogglebuttonWithLabel("co2table_prepare_time",
+                                                         self.current_config['co2table_prepare_time'],
                                                          "10 s", "1 Minute"))
+
         self.gridlayout.add_widget(Label(text="CO2-Tabelle\nHaltezeit von\nMaxZeit ableiten?", size_hint_x=0.45))
-        self.gridlayout.add_widget(TogglebuttonWithLabel("co2table_use_maxtime", 0,
+        self.gridlayout.add_widget(TogglebuttonWithLabel("co2table_use_maxtime",
+                                                         self.current_config['co2table_use_maxtime'],
                                                          "Nein", "Ja (40-50%)"))
+
         self.gridlayout.add_widget(Label(text="CO2-Tabelle\nEigene Haltezeit", size_hint_x=0.45))
         self.gridlayout.add_widget(SliderWithLabel("co2table_hold_time",
-                                                   30, 120, 30))
+                                                   30, 120, self.current_config['co2table_hold_time']))
 
         self.bind(pos=self.update_rect)
         self.bind(size=self.update_rect)
 
-    def on_enter(self, *args):
-        pass
+    @staticmethod
+    def get_default_config() -> dict:
+        config_dict = {
+            'maxtime_prepare_time': 0,          # No prepare time
+            'squarebreath_prepare_time': 0,     # 0 means : 10 seconds prepare time
+            'squarebreath_inhale_time': 10,    # 10 seconds inhale, 20 seconds exhale
+            'co2table_prepare_time': 0,         # 0 means: 10 seconds prepare time
+            'co2table_use_maxtime': 0,          # 0: use value from co2table_hold_time, not from maximum holding time
+            'co2table_hold_time': 30            # 30 is the very minimum for CO2 table
+        }
+        return config_dict
+
+    def init_current_config(self):
+        self.current_config = self.get_default_config()     # our config
+        stored_config = dbtools.get_full_config()           # config on database
+        config_keys = self.current_config.keys()
+        stored_keys = stored_config.keys()
+        for key in config_keys:
+            if key in stored_keys:
+                # update out local key with the database
+                self.current_config[key] = stored_config[key]
+            else:
+                # key not found, database is not up to date
+                # store the key in the database
+                dbtools.set_configvalue(key, self.current_config[key])
 
     def on_backbutton_press(self, _instance):
         self.manager.current = self.parent_screen_name
