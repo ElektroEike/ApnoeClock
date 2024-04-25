@@ -27,7 +27,6 @@ class Co2TableScreen(Screen):
                        11: ("Atem halten", 1, 12), 12: ("...atmen...", 1, 13),
                        13: ("Atem halten", 1, 14), 14: ("...atmen...", 1, 15),
                        15: ("Atem halten", 3, -1)}
-
         self.layout = FloatLayout(size_hint=(1, 1))
         self.add_widget(self.layout)
         self.layout.add_widget(Label(text="CO2 Tabelle", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
@@ -77,8 +76,11 @@ class Co2TableScreen(Screen):
             Color(0.5, 0.5, 0.5)
             self.background_rect = Rectangle(pos=self.layout.pos, size=self.layout.size)
 
+        # connect events and callbacks
         self.bind(pos=self.update_rect)
         self.bind(size=self.update_rect)
+
+        # init state clock
         self.clock = StateClock(self.states, self.stateclock_reports)
 
     def on_enter(self, *args):
