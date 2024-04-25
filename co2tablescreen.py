@@ -82,6 +82,41 @@ class Co2TableScreen(Screen):
         self.clock = StateClock(self.states, self.stateclock_reports)
 
     def on_enter(self, *args):
+        # prepare time
+        valid_p, value_p = dbtools.get_configvalue('co2table_prepare_time')
+        prepare_time = 10
+        if valid_p and value_p == 1:
+            prepare_time = 60
+        text_state, time_state, next_state = self.states[0]
+        self.states[0] = (text_state, prepare_time, next_state)
+        # do we use maxtime?
+        valid_u, value_u = dbtools.get_configvalue('co2table_use_maxtime')
+        breathholding_time = 30  # minimum
+        breathing_time = 60
+        # calculate the breathholding time and the maximum breathing time
+        # between two breathholdings
+        if valid_u and value_u == 1:
+            # derive apnoe time from  max breathholding
+            max_breathholding_of_all_the_time = dbtools.get_maximum_breathholding_time()
+            if max_breathholding_of_all_the_time > 120:
+                breathholding_time = max(0.4 * max_breathholding_of_all_the_time, breathholding_time)
+            else:
+                breathholding_time = max(0.5 * max_breathholding_of_all_the_time, breathholding_time)
+        else:
+            valid_h, value_h = dbtools.get_configvalue('co2table_hold_time')
+            if valid_h:
+                breathholding_time = value_h
+        if breathholding_time > 120:
+            breathing_time = 70
+        steps = breathing_time // 10        # reduce breathing time by this amount per round
+        # and now fill in
+        for i in (1, 3, 5, 7, 9, 11, 13, 15):
+            text_state, time_state, next_state = self.states[i]
+            self.states[i] = text_state, breathholding_time, next_state
+        for i in (2, 4, 6, 8, 10, 12, 14):
+            text_state, time_state, next_state = self.states[i]
+            self.states[i] = text_state, breathing_time, next_state
+            breathing_time -= steps
         self._prepare()
 
     def on_leave(self, *args):
