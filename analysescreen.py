@@ -37,6 +37,14 @@ class AnalyseScreen(Screen):
                 self.date_rects.append(Rectangle(size=(10, 10), size_hint=(None, None)))
         self.trainingsrecords = {}
 
+        # background
+        with self.layout.canvas.before:
+            Color(0.5, 0.5, 0.5)
+            self.background_rect = Rectangle(pos=self.layout.pos, size=self.layout.size)
+            Color(0.6, 0.6, 0.6, 1)
+            self.plot_rect = Rectangle()
+            self.calendar_rect = Rectangle()
+
         self.bind(pos=self.update_rect)
         self.bind(size=self.update_rect)
 
@@ -68,12 +76,12 @@ class AnalyseScreen(Screen):
         cal_width = plot_width
         cal_height = height / 3 - 2 * cal_y
         # background
-        with self.layout.canvas.before:
-            Color(0.5, 0.5, 0.5)
-            Rectangle(pos=self.layout.pos, size=self.layout.size)
-            Color(0.6, 0.6, 0.6, 1)
-            Rectangle(pos=(plot_x, plot_y), size=(plot_width, plot_height))
-            Rectangle(pos=(cal_x, cal_y), size=(cal_width, cal_height))
+        self.background_rect.pos = self.layout.pos
+        self.background_rect.size = self.layout.size
+        self.plot_rect.pos = (plot_x, plot_y)
+        self.plot_rect.size = (plot_width, plot_height)
+        self.calendar_rect.pos = (cal_x, cal_y)
+        self.calendar_rect.size = (cal_width, cal_height)
         # Plot
         points = []
         num_points = len(self.graphpoints)

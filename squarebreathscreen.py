@@ -79,6 +79,11 @@ class SquareBreathScreen(Screen):
         self.current_state_num = -2                     # start after preparation
         self.we_can_write_a_trainingsrecord = False     # only _after_ exercise!
 
+        # background
+        with self.layout.canvas.before:
+            Color(0.5, 0.5, 0.5)
+            self.background_rect = Rectangle(pos=self.layout.pos, size=self.layout.size)
+
         self.bind(pos=self.update_rect)
         self.bind(size=self.update_rect)
         self.clock = StateClock(self.states, self.stateclock_reports)
@@ -206,10 +211,8 @@ class SquareBreathScreen(Screen):
         self.manager.current = self.parent_screen_name
 
     def update_rect(self, *_args):
-        with self.layout.canvas.before:
-            # Background
-            Color(0.5, 0.5, 0.5)
-            Rectangle(pos=self.layout.pos, size=self.layout.size)
+        self.background_rect.pos = self.layout.pos
+        self.background_rect.size = self.layout.size
 
         # draw lines along the border
         width, height = self.size

@@ -72,6 +72,11 @@ class Co2TableScreen(Screen):
 
         self.current_state_num = -2                     # we start after preparation
 
+        # Background
+        with self.layout.canvas.before:
+            Color(0.5, 0.5, 0.5)
+            self.background_rect = Rectangle(pos=self.layout.pos, size=self.layout.size)
+
         self.bind(pos=self.update_rect)
         self.bind(size=self.update_rect)
         self.clock = StateClock(self.states, self.stateclock_reports)
@@ -155,9 +160,8 @@ class Co2TableScreen(Screen):
 
     def update_rect(self, *_args):
         # Background
-        with self.layout.canvas.before:
-            Color(0.5, 0.5, 0.5)
-            Rectangle(pos=self.layout.pos, size=self.layout.size)
+        self.background_rect.pos = self.layout.pos
+        self.background_rect.size = self.layout.size
         # Ellipses - showing the round number
         width, height = self.size
         size = min(width, height) / 20

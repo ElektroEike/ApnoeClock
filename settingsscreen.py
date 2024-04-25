@@ -132,12 +132,13 @@ class SettingsScreen(Screen):
         self.gridlayout.add_widget(Label(text="CO2-Tabelle\nEigene Haltezeit", size_hint_x=0.45))
         self.gridlayout.add_widget(SliderWithLabel("co2table_hold_time",
                                                    30, 120, self.current_config['co2table_hold_time']))
-
+        # connect events to callbacks
         self.bind(pos=self.update_rect)
         self.bind(size=self.update_rect)
 
     @staticmethod
     def get_default_config() -> dict:
+        """ sets default values for config items """
         config_dict = {
             'maxtime_prepare_time': 0,          # No prepare time
             'squarebreath_prepare_time': 0,     # 0 means : 10 seconds prepare time
@@ -149,13 +150,15 @@ class SettingsScreen(Screen):
         return config_dict
 
     def init_current_config(self):
+        """ read config from database. If database does not provide a config item, we read
+            ths from default items and write it to database. """
         self.current_config = self.get_default_config()     # our config
         stored_config = dbtools.get_full_config()           # config on database
-        config_keys = self.current_config.keys()
-        stored_keys = stored_config.keys()
-        for key in config_keys:
-            if key in stored_keys:
-                # update out local key with the database
+        current_config_keys = self.current_config.keys()
+        stored_config_keys = stored_config.keys()
+        for key in current_config_keys:
+            if key in stored_config_keys:
+                # update our local config value with what we found in the database
                 self.current_config[key] = stored_config[key]
             else:
                 # key not found, database is not up to date
