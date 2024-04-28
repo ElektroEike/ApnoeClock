@@ -191,7 +191,7 @@ class O2TableScreen(Screen):
             elipse.size = (size, size)
             x = (index + 1) * width / 9 - size / 2
             elipse.pos = (x, y)
-        # labels todo
+        # labels _todo
         for i in range(0, 2):
             x = self.label_todo_states[i].x
             y = self.label_todo_states[i].y

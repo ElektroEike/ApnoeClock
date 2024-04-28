@@ -43,8 +43,12 @@ class MenuScreen(Screen):
     def on_co2table_press(self, _instance):
         self.manager.current = "Co2TableScreen"
 
-    def on_o2table_press(self, _instance):
-        self.manager.current = "O2TableScreen"
+    def on_o2table_press(self, instance):
+        max_breathholding_of_all_the_time = dbtools.get_maximum_breathholding_time()
+        if max_breathholding_of_all_the_time >= 90:
+            self.manager.current = "O2TableScreen"
+        else:
+            instance.text = "Nee, Maximalzeit zu kurz"
 
     def on_analyse_press(self, _instance):
         self.manager.current = "AnalyseScreen"
