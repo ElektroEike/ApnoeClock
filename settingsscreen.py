@@ -20,7 +20,9 @@
     co2table_hold_time:
         [value] (30 seconds is default): the breath holding time, if you select co2table_use_maxtime=0
         Please note, that whatever you select, the minimum breathholding time in CO2-Table is 30 seconds
-
+    o2table_prepare_time:
+        0 (Default): 10 seconds prepare time
+        1: 1 minute prepare time
     For actual default values, see get_default_config() in this file
 """
 from kivy.uix.boxlayout import BoxLayout
@@ -132,6 +134,12 @@ class SettingsScreen(Screen):
         self.gridlayout.add_widget(Label(text="CO2-Tabelle\nEigene Haltezeit", size_hint_x=0.45))
         self.gridlayout.add_widget(SliderWithLabel("co2table_hold_time",
                                                    30, 120, self.current_config['co2table_hold_time']))
+
+        self.gridlayout.add_widget(Label(text="O2-Tabelle\nVorbereitungszeit", size_hint_x=0.45))
+        self.gridlayout.add_widget(TogglebuttonWithLabel("o2table_prepare_time",
+                                                         self.current_config['o2table_prepare_time'],
+                                                         "10 s", "1 Minute"))
+
         # connect events to callbacks
         self.bind(pos=self.update_rect)
         self.bind(size=self.update_rect)
@@ -145,7 +153,8 @@ class SettingsScreen(Screen):
             'squarebreath_inhale_time': 10,     # 10 seconds inhale, 20 seconds exhale
             'co2table_prepare_time': 0,         # 0 means: 10 seconds prepare time
             'co2table_use_maxtime': 0,          # 0: use value from co2table_hold_time, not from maximum holding time
-            'co2table_hold_time': 30            # 30 is the very minimum for CO2 table
+            'co2table_hold_time': 30,           # 30 is the very minimum for CO2 table
+            'o2table_prepare_time': 0           # 0 means 10 seconds prepare time
         }
         return config_dict
 
