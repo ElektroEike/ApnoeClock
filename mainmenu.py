@@ -11,6 +11,7 @@ from co2tablescreen import Co2TableScreen
 from o2tablescreen import O2TableScreen
 from analysescreen import AnalyseScreen
 from settingsscreen import SettingsScreen
+from infoscreen import InfoScreen
 import dbtools
 
 
@@ -25,7 +26,7 @@ class MenuScreen(Screen):
         layout.add_widget(Button(text="O_2-Tabelle", font_size="14pt", on_press=self.on_o2table_press))
         layout.add_widget(Button(text="Auswertung", font_size="14pt", on_press=self.on_analyse_press))
         layout.add_widget(Button(text="Einstellung", font_size="14pt", on_press=self.on_settings_press))
-        layout.add_widget(Button(text="Über", font_size="14pt", ))
+        layout.add_widget(Button(text="Infos", font_size="14pt", on_press=self.on_infos_press))
         self.bind(size=self.update_rect)
         self.bind(pos=self.update_rect)
 
@@ -56,6 +57,9 @@ class MenuScreen(Screen):
     def on_settings_press(self, _instance):
         self.manager.current = "SettingsScreen"
 
+    def on_infos_press(self, _instance):
+        self.manager.current = "InfoScreen"
+
 
 class ApnoeClockApp(App):
     def build(self):
@@ -68,6 +72,7 @@ class ApnoeClockApp(App):
         manager.add_widget(O2TableScreen("MenuScreen", name="O2TableScreen"))
         manager.add_widget(AnalyseScreen("MenuScreen", name="AnalyseScreen"))
         manager.add_widget(SettingsScreen("MenuScreen", name="SettingsScreen"))
+        manager.add_widget(InfoScreen("MenuScreen", name="InfoScreen"))
         manager.current = "MenuScreen"
         return manager
 
