@@ -86,7 +86,7 @@ class AnalyseScreen(Screen):
         points = []
         num_points = len(self.graphpoints)
         if num_points > 0:
-            scale_x = (plot_width+10) // num_points
+            scale_x = (plot_width + 10) // 100
             maxy = max(self.graph_minmax[1], self.plot_milestone_value) + 20
             scale_y = plot_height / maxy
             start_x = plot_x + 10

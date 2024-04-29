@@ -116,8 +116,7 @@
                 line_height: 1.5
                 text: """Die O2-Tabelle übt den Umgang mit sinkendem Sauerstoffgehalt.\nUm die O2-Tabelle nutzen zu können, müssen Sie mindestens 90 Sekunden lang die Luft anhalten können.\nIn den [b]Einstellungen[/b] können Sie die Vorbereitungszeit einstellen."""
 
-
-        FloatLayout:                        # Page Auswertung
+        FloatLayout:                        # Page Analyse
             orientation:'vertical'
             canvas.before:
                 Color:
@@ -137,4 +136,4 @@
                 valign: 'center'
                 markup: True
                 line_height: 1.5
-                text: """In der Auswertung sieht man einen Graphen, der (grob) die Entwicklung der Maximalzeit über die Trainingszeit anzeigt.\nUnten sieht man einen Kalender, der für jeden Tag farblich anzeigt, ob man trainiert hat.\nJe grüner, desto mehr verschiedene Übungen hat man an dem Tag gemacht."""
+                text: """In der Auswertung sieht man einen Graphen, der (grob) die Entwicklung der Maximalzeit über die letzten 100 Tage anzeigt.\nUnten sieht man einen Kalender, der für jeden Tag farblich anzeigt, ob man trainiert hat.\nJe grüner, desto mehr verschiedene Übungen hat man an dem Tag gemacht."""
