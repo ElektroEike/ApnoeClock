@@ -1,25 +1,140 @@
 <InfoScreen>
+    PageLayout:
+        FloatLayout:                        # Page Author
+            orientation:'vertical'
+            canvas.before:
+                Color:
+                    rgb: 0.5, 0.5, 0.5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Label:
+                size_hint: (0.5, 0.1)
+                pos_hint: {'center_x': 0.5, 'y': 0.9}
+                text: "Autor"
+            Button:
+                text: '↩'
+                font_name: 'DejaVuSans'
+                font_size: "20pt"
+                size_hint: (0.2, 0.1)
+                pos_hint: {'x': 0.01, 'y': 0.89}
+                on_press: root.on_backbutton_press()
+            Label:
+                size_hint: (0.8, 0.5)
+                pos_hint: {'x': 0.1, 'y': 0.1}
+                text_size: self.size
+                halign: 'left'
+                valign: 'center'
+                line_height: 2
+                text: """Entwicklung unter:\nhttps://github.com/ElektroEike/ApnoeClock\n\nBitte trainieren Sie im Wasser niemals alleine. Alle hier beschriebenen Trainings können Sie bequem auf ihrer Couch ausführen."""
 
-    canvas.before:
-        Color:
-            rgb: 0.5, 0.5, 0.5
-        Rectangle:
-            pos: 0, 0
-            size: self.width, self.height
+        FloatLayout:                        # Page MaxTime
+            orientation:'vertical'
+            canvas.before:
+                Color:
+                    rgb: 0.5, 0.5, 0.5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Label:
+                size_hint: (0.5, 0.1)
+                pos_hint: {'center_x': 0.5, 'y': 0.9}
+                text: "Maximalversuch"
+            Label:
+                size_hint: (0.8, 0.5)
+                pos_hint: {'x': 0.1, 'y': 0.1}
+                text_size: self.size
+                halign: 'left'
+                valign: 'center'
+                markup: True
+                line_height: 1.5
+                text: """Beim Maximalversuch hält man die Luft an - so lange man kann.\nUnter [b]Einstellung[/b] kann man auswählen, ob eine Vorbereitungszeit gezählt werden soll.\nMaximalversuche werden geloggt, der Fortschritt kann unter [b]Auswertung[/b] eingesehen werden."""
 
-    FloatLayout:
-        Label:
-            size_hint: (0.5, 0.1)
-            pos_hint: {'center_x': 0.5, 'y': 0.9}
-            text: "Infos"
+        FloatLayout:                        # Page SquareBreathing
+            orientation:'vertical'
+            canvas.before:
+                Color:
+                    rgb: 0.5, 0.5, 0.5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Label:
+                size_hint: (0.5, 0.1)
+                pos_hint: {'center_x': 0.5, 'y': 0.9}
+                text: "Intervallatmung"
+            Label:
+                size_hint: (0.8, 0.5)
+                pos_hint: {'x': 0.1, 'y': 0.1}
+                text_size: self.size
+                halign: 'left'
+                valign: 'center'
+                markup: True
+                line_height: 1.5
+                text: """Die Intervallatmung gibt übt kurzzeitiges Anhalten des Atems. Es handelt sich um einen Wechsel von einatmen, Atem halten, ausatmen und wieder Atem halten. Die Vorbereitungszeit und die Dauer der Einatemzeit können unter [b]Einstellung[/b] geändert werden. Die Ausatemzeit ist die doppelte Einatemzeit."""
 
-        Button:
-            text: '↩'
-            font_name: 'DejaVuSans'
-            font_size: "20pt"
-            size_hint: (0.2, 0.1)
-            pos_hint: {'x': 0.01, 'y': 0.89}
-            on_press: root.on_backbutton_press()
+        FloatLayout:                        # Page CO2 Table
+            orientation:'vertical'
+            canvas.before:
+                Color:
+                    rgb: 0.5, 0.5, 0.5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Label:
+                size_hint: (0.5, 0.1)
+                pos_hint: {'center_x': 0.5, 'y': 0.9}
+                text: "CO2-Tabelle"
+            Label:
+                size_hint: (0.8, 0.5)
+                pos_hint: {'x': 0.1, 'y': 0.1}
+                text_size: self.size
+                halign: 'left'
+                valign: 'center'
+                markup: True
+                line_height: 1.5
+                text: """CO2-Tabelle übt den Umgang mit steigender CO2-Konzentration.\nEs ist ein Wechsel von Atem halten und atmen, wobei die Atemzeit bei jeder Runde verkürzt wird. Insgesamt gibt es pro Übung 8 Runden.\nUnter [b]Einstellung[/b] kann die Vorbereitungszeit eingestellt werden. Es kann eine eigene Haltezeit eingestellt werden, die Haltezeit kann aber auch aus der Maximalzeit bestimmt werden.\nDie kleinste Haltezeit ist 30 Sekunden."""
+
+        FloatLayout:                        # Page O2 Table
+            orientation:'vertical'
+            canvas.before:
+                Color:
+                    rgb: 0.5, 0.5, 0.5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Label:
+                size_hint: (0.5, 0.1)
+                pos_hint: {'center_x': 0.5, 'y': 0.9}
+                text: "O2-Tabelle"
+            Label:
+                size_hint: (0.8, 0.5)
+                pos_hint: {'x': 0.1, 'y': 0.1}
+                text_size: self.size
+                halign: 'left'
+                valign: 'center'
+                markup: True
+                line_height: 1.5
+                text: """Die O2-Tabelle übt den Umgang mit sinkendem Sauerstoffgehalt.\nUm die O2-Tabelle nutzen zu können, müssen Sie mindestens 90 Sekunden lang die Luft anhalten können.\nIn den [b]Einstellungen[/b] können Sie die Vorbereitungszeit einstellen."""
 
 
-
+        FloatLayout:                        # Page Auswertung
+            orientation:'vertical'
+            canvas.before:
+                Color:
+                    rgb: 0.5, 0.5, 0.5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Label:
+                size_hint: (0.5, 0.1)
+                pos_hint: {'center_x': 0.5, 'y': 0.9}
+                text: "Auswertung"
+            Label:
+                size_hint: (0.8, 0.5)
+                pos_hint: {'x': 0.1, 'y': 0.1}
+                text_size: self.size
+                halign: 'left'
+                valign: 'center'
+                markup: True
+                line_height: 1.5
+                text: """In der Auswertung sieht man einen Graphen, der (grob) die Entwicklung der Maximalzeit über die Trainingszeit anzeigt.\nUnten sieht man einen Kalender, der für jeden Tag farblich anzeigt, ob man trainiert hat.\nJe grüner, desto mehr verschiedene Übungen hat man an dem Tag gemacht."""
