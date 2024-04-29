@@ -351,5 +351,6 @@ if __name__ == '__main__':
     # drop_tables()
     # init_tables()
     list_config()
+    list_maxtimes()
     #print(get_configvalue('nonexistent'))
     #print(get_configvalue('name'))
