@@ -30,9 +30,9 @@ class Co2TableScreen(Screen):
         self.layout = FloatLayout(size_hint=(1, 1))
         self.add_widget(self.layout)
         self.layout.add_widget(Label(text="CO2 Tabelle", size_hint=(0.5, 0.1), pos_hint={'center_x': 0.5, 'y': 0.9}))
-        self.label_todo = Label(text="ToDo", font_size="30pt", size_hint=(0.9, 0.1), pos_hint={'x': 0.05, 'y': 0.8})
+        self.label_todo = Label(text="ToDo", font_size="10pt", size_hint=(0.9, 0.1), pos_hint={'x': 0.05, 'y': 0.8})
         self.layout.add_widget(self.label_todo)
-        self.label_time = Label(text="00:00", font_size="30pt", size_hint=(0.9, 0.1), pos_hint={'x': 0.05, 'y': 0.71})
+        self.label_time = Label(text="00:00", font_size="10pt", size_hint=(0.9, 0.1), pos_hint={'x': 0.05, 'y': 0.71})
         self.layout.add_widget(self.label_time)
         self.action_button = Button(text="Start", size_hint=(0.98, 0.5), pos_hint={'x': 0.01, 'y': 0.01},
                                     on_press=self.on_startstop_press)
@@ -43,13 +43,13 @@ class Co2TableScreen(Screen):
         # show, what the user has to do next
         self.label_todo_states = []
         text = f'{self.states[1][0]} {self.states[1][1]} s'
-        label_todo_state1 = Label(text=text, font_size="14pt",
+        label_todo_state1 = Label(text=text, font_size="7pt",
                                   size_hint=(0.48, 0.05), pos_hint={'x': 0.01, 'y': 0.64})
         self.layout.add_widget(label_todo_state1)
         self.label_todo_states.append(label_todo_state1)
 
         text = f'{self.states[2][0]} {self.states[2][1]} s'
-        label_todo_state2 = Label(text=text, font_size="14pt",
+        label_todo_state2 = Label(text=text, font_size="7pt",
                                   size_hint=(0.48, 0.05), pos_hint={'x': 0.5, 'y': 0.64})
         self.layout.add_widget(label_todo_state2)
         self.label_todo_states.append(label_todo_state2)

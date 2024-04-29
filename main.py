@@ -3,6 +3,7 @@ __version__ = "0.1"
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.uix.label import Label
 from kivy.graphics import Color, Rectangle
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.config import Config
@@ -21,13 +22,17 @@ class MenuScreen(Screen):
         super(MenuScreen, self).__init__(**kwargs)
         layout = BoxLayout(orientation='vertical', size_hint=(.8, .8), pos_hint={'center_x': 0.5, 'center_y': 0.5})
         self.add_widget(layout)
-        layout.add_widget(Button(text="Maximalversuch", font_size="14pt", on_press=self.on_maxtime_press))
-        layout.add_widget(Button(text="Intervallatmung", font_size="14pt", on_press=self.on_interval_press))
-        layout.add_widget(Button(text="CO_2-Tabelle", font_size="14pt", on_press=self.on_co2table_press))
-        layout.add_widget(Button(text="O_2-Tabelle", font_size="14pt", on_press=self.on_o2table_press))
-        layout.add_widget(Button(text="Auswertung", font_size="14pt", on_press=self.on_analyse_press))
-        layout.add_widget(Button(text="Einstellung", font_size="14pt", on_press=self.on_settings_press))
-        layout.add_widget(Button(text="Infos", font_size="14pt", on_press=self.on_infos_press))
+        layout.add_widget(Button(text="Maximalversuch", on_press=self.on_maxtime_press))
+        layout.add_widget(Button(text="Intervallatmung", on_press=self.on_interval_press))
+        layout.add_widget(Button(text="CO_2-Tabelle", on_press=self.on_co2table_press))
+        layout.add_widget(Button(text="O_2-Tabelle", on_press=self.on_o2table_press))
+        layout.add_widget(Button(text="Auswertung", on_press=self.on_analyse_press))
+        layout.add_widget(Button(text="Einstellung", on_press=self.on_settings_press))
+        layout.add_widget(Button(text="Infos", on_press=self.on_infos_press))
+        self.tt = Label(text="xx")
+
+        layout.add_widget(self.tt)
+
         self.bind(size=self.update_rect)
         self.bind(pos=self.update_rect)
 
@@ -35,6 +40,8 @@ class MenuScreen(Screen):
         with self.canvas.before:
             Color(0.5, 0.5, 0.5)
             Rectangle(pos=self.pos, size=self.size)
+        self.tt.text = str(self.size)
+
 
     def on_maxtime_press(self, _instance):
         self.manager.current = "MaxTimeScreen"
@@ -79,6 +86,6 @@ class ApnoeClockApp(App):
 
 
 if __name__ == '__main__':
-    Config.set('graphics', 'width', '432')
-    Config.set('graphics', 'height', '768')
+    #Config.set('graphics', 'width', '432')
+    #Config.set('graphics', 'height', '768')
     ApnoeClockApp().run()

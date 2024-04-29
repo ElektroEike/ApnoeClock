@@ -95,7 +95,7 @@ class SettingsScreen(Screen):
                                       on_press=self.on_backbutton_press))
         # grid layout for items to change
         self.gridlayout = GridLayout(size_hint=(0.98, 0.8), pos_hint={'x': 0.01, 'y': 0.01},
-                                     cols=2, spacing=10, padding=2,
+                                     cols=2, spacing=20, padding=2,
                                      row_force_default=True, row_default_height=50)
         self.layout.add_widget(self.gridlayout)
         with self.gridlayout.canvas.before:
