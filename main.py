@@ -29,9 +29,10 @@ class MenuScreen(Screen):
         layout.add_widget(Button(text="Auswertung", on_press=self.on_analyse_press))
         layout.add_widget(Button(text="Einstellung", on_press=self.on_settings_press))
         layout.add_widget(Button(text="Infos", on_press=self.on_infos_press))
-        self.tt = Label(text="xx")
 
-        layout.add_widget(self.tt)
+        # debug output:
+        # self.tt = Label(text="xx")
+        # layout.add_widget(self.tt)
 
         self.bind(size=self.update_rect)
         self.bind(pos=self.update_rect)
@@ -40,7 +41,7 @@ class MenuScreen(Screen):
         with self.canvas.before:
             Color(0.5, 0.5, 0.5)
             Rectangle(pos=self.pos, size=self.size)
-        self.tt.text = str(self.size)
+        # just a debug: self.tt.text = str(self.size)
 
 
     def on_maxtime_press(self, _instance):

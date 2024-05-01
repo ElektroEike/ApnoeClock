@@ -94,9 +94,7 @@ class SettingsScreen(Screen):
                                       size_hint=(0.2, 0.1), pos_hint={'x': 0.01, 'y': 0.89},
                                       on_press=self.on_backbutton_press))
         # grid layout for items to change
-        self.gridlayout = GridLayout(size_hint=(0.98, 0.8), pos_hint={'x': 0.01, 'y': 0.01},
-                                     cols=2, spacing=20, padding=2,
-                                     row_force_default=True, row_default_height=50)
+        self.gridlayout = GridLayout(size_hint=(0.98, 0.8), pos_hint={'x': 0.01, 'y': 0.01}, cols=2)
         self.layout.add_widget(self.gridlayout)
         with self.gridlayout.canvas.before:
             Color(0.4, 0.4, 0.4)
@@ -106,36 +104,37 @@ class SettingsScreen(Screen):
         self.init_current_config()
 
         # Config Items
-        self.gridlayout.add_widget(Label(text="Maximalversuch\nVorbereitung?", size_hint_x=0.45))
+        self.gridlayout.add_widget(Label(text="Maximalversuch\nVorbereitung?", size_hint_x=0.45, font_size="12dp"))
         self.gridlayout.add_widget(TogglebuttonWithLabel("maxtime_prepare_time",
                                                          self.current_config['maxtime_prepare_time'],
                                                          "Nein", "1 Minute"))
 
-        self.gridlayout.add_widget(Label(text="Intervallatmung\nVorbereitungszeit", size_hint_x=0.45))
+        self.gridlayout.add_widget(Label(text="Intervallatmung\nVorbereitungszeit", size_hint_x=0.45, font_size="12dp"))
         self.gridlayout.add_widget(TogglebuttonWithLabel("squarebreath_prepare_time",
                                                          self.current_config['squarebreath_prepare_time'],
                                                          "10 s", "1 Minute"))
 
-        self.gridlayout.add_widget(Label(text="Intervallatmung\nEinatmen:", size_hint_x=0.45))
+        self.gridlayout.add_widget(Label(text="Intervallatmung\nEinatmen:", size_hint_x=0.45, font_size="12dp"))
         self.gridlayout.add_widget(SliderWithLabel("squarebreath_inhale_time",
                                                    5, 15,
                                                    self.current_config['squarebreath_inhale_time']))
 
-        self.gridlayout.add_widget(Label(text="CO2-Tabelle\nVorbereitungszeit", size_hint_x=0.45))
+        self.gridlayout.add_widget(Label(text="CO2-Tabelle\nVorbereitungszeit", size_hint_x=0.45, font_size="12dp"))
         self.gridlayout.add_widget(TogglebuttonWithLabel("co2table_prepare_time",
                                                          self.current_config['co2table_prepare_time'],
                                                          "10 s", "1 Minute"))
 
-        self.gridlayout.add_widget(Label(text="CO2-Tabelle\nHaltezeit von\nMaxZeit ableiten?", size_hint_x=0.45))
+        self.gridlayout.add_widget(Label(text="CO2-Tabelle\nHaltezeit von\nMaxZeit ableiten?", size_hint_x=0.45,
+                                         font_size="10dp"))
         self.gridlayout.add_widget(TogglebuttonWithLabel("co2table_use_maxtime",
                                                          self.current_config['co2table_use_maxtime'],
                                                          "Nein", "Ja (40-50%)"))
 
-        self.gridlayout.add_widget(Label(text="CO2-Tabelle\nEigene Haltezeit", size_hint_x=0.45))
+        self.gridlayout.add_widget(Label(text="CO2-Tabelle\nEigene Haltezeit", size_hint_x=0.45, font_size="12dp"))
         self.gridlayout.add_widget(SliderWithLabel("co2table_hold_time",
                                                    30, 120, self.current_config['co2table_hold_time']))
 
-        self.gridlayout.add_widget(Label(text="O2-Tabelle\nVorbereitungszeit", size_hint_x=0.45))
+        self.gridlayout.add_widget(Label(text="O2-Tabelle\nVorbereitungszeit", size_hint_x=0.45, font_size="12dp"))
         self.gridlayout.add_widget(TogglebuttonWithLabel("o2table_prepare_time",
                                                          self.current_config['o2table_prepare_time'],
                                                          "10 s", "1 Minute"))
