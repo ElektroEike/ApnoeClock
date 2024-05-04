@@ -92,9 +92,9 @@ class O2TableScreen(Screen):
         text_state, time_state, next_state = self.states[0]
         self.states[0] = (text_state, prepare_time, next_state)
         max_breathholding_of_all_the_time = dbtools.get_maximum_breathholding_time()
-        breathholding_time = 0.7 * max_breathholding_of_all_the_time
+        breathholding_time = int(0.7 * max_breathholding_of_all_the_time)
         breathing_time = 120
-        steps = breathholding_time // 10        # add holding time by this amount per round
+        steps = int(breathholding_time // 10)        # add holding time by this amount per round
         # and now fill in
         for i in (11, 9, 7, 5, 3, 1):
             text_state, time_state, next_state = self.states[i]

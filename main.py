@@ -25,7 +25,15 @@ class MenuScreen(Screen):
         layout.add_widget(Button(text="Maximalversuch", on_press=self.on_maxtime_press))
         layout.add_widget(Button(text="Intervallatmung", on_press=self.on_interval_press))
         layout.add_widget(Button(text="CO_2-Tabelle", on_press=self.on_co2table_press))
-        layout.add_widget(Button(text="O_2-Tabelle", on_press=self.on_o2table_press))
+
+        max_breathholding_of_all_the_time = dbtools.get_maximum_breathholding_time()
+        if max_breathholding_of_all_the_time >= 90:
+            label_text = "O_2-Tabelle"
+        else:
+            label_text = "O2: (Maximalzeit zu kurz)"
+        self.o2table_button = Button(text=label_text, on_press=self.on_o2table_press)
+
+        layout.add_widget(self.o2table_button)
         layout.add_widget(Button(text="Auswertung", on_press=self.on_analyse_press))
         layout.add_widget(Button(text="Einstellung", on_press=self.on_settings_press))
         layout.add_widget(Button(text="Infos", on_press=self.on_infos_press))
@@ -36,6 +44,16 @@ class MenuScreen(Screen):
 
         self.bind(size=self.update_rect)
         self.bind(pos=self.update_rect)
+
+
+    def on_enter(self, *args):
+        if not self.manager.has_screen("O2TableScreen"):
+            return
+        max_breathholding_of_all_the_time = dbtools.get_maximum_breathholding_time()
+        if max_breathholding_of_all_the_time >= 90:
+            self.o2table_button.text = "O_2-Tabelle"
+        else:
+            self.o2table_button.text = "O2: (Maximalzeit zu kurz)"
 
     def update_rect(self, _instance, _value):
         with self.canvas.before:
@@ -57,8 +75,6 @@ class MenuScreen(Screen):
         max_breathholding_of_all_the_time = dbtools.get_maximum_breathholding_time()
         if max_breathholding_of_all_the_time >= 90:
             self.manager.current = "O2TableScreen"
-        else:
-            instance.text = "Nee, Maximalzeit zu kurz"
 
     def on_analyse_press(self, _instance):
         self.manager.current = "AnalyseScreen"

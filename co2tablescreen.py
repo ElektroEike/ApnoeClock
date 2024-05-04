@@ -19,13 +19,13 @@ class Co2TableScreen(Screen):
         self.parent_screen_name = parentname
         # 8 turns of apnea and breathing
         self.states = {0: ("vorbereiten", 3, 1),
-                       1: ("Atem halten", 1, 2), 2: ("...atmen...", 1, 3),
-                       3: ("Atem halten", 1, 4), 4: ("...atmen...", 2, 5),
-                       5: ("Atem halten", 1, 6), 6: ("...atmen...", 1, 7),
-                       7: ("Atem halten", 1, 8), 8: ("...atmen...", 1, 9),
-                       9: ("Atem halten", 1, 10), 10: ("...atmen...", 1, 11),
-                       11: ("Atem halten", 1, 12), 12: ("...atmen...", 1, 13),
-                       13: ("Atem halten", 1, 14), 14: ("...atmen...", 1, 15),
+                       1: ("Atem halten", 1, 2), 2: ("atmen", 1, 3),
+                       3: ("Atem halten", 1, 4), 4: ("atmen", 2, 5),
+                       5: ("Atem halten", 1, 6), 6: ("atmen", 1, 7),
+                       7: ("Atem halten", 1, 8), 8: ("atmen", 1, 9),
+                       9: ("Atem halten", 1, 10), 10: ("atmen", 1, 11),
+                       11: ("Atem halten", 1, 12), 12: ("atmen", 1, 13),
+                       13: ("Atem halten", 1, 14), 14: ("atmen", 1, 15),
                        15: ("Atem halten", 3, -1)}
         self.layout = FloatLayout(size_hint=(1, 1))
         self.add_widget(self.layout)

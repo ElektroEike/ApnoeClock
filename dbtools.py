@@ -350,7 +350,8 @@ def atest_insert_trainings_values():
 if __name__ == '__main__':
     # drop_tables()
     # init_tables()
-    list_config()
-    list_maxtimes()
+    #list_config()
+    # list_maxtimes()
+    drop_tables()
     #print(get_configvalue('nonexistent'))
     #print(get_configvalue('name'))
